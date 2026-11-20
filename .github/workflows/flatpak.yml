@@ -1,0 +1,31 @@
+# Builds the Flatpak with Flathub's own tooling and publishes it as a downloadable artifact
+# (Actions → this run → Artifacts → aurora-waves-x86_64). Install it with:
+#   flatpak install --user aurora-waves.flatpak
+name: Flatpak
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "aurorawaves/**"
+      - "data/**"
+      - "packaging/flatpak/**"
+      - "pyproject.toml"
+      - ".github/workflows/flatpak.yml"
+
+jobs:
+  flatpak:
+    name: Build Flatpak
+    runs-on: ubuntu-latest
+    container:
+      # flatpak-builder installs the KDE 6.11 runtime and the PySide BaseApp from Flathub
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.9
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+      - uses: flathub-infra/flatpak-github-actions/flatpak-builder@933e9e8ca36e85046ebca8e211f0785c6becac40
+        with:
+          bundle: aurora-waves.flatpak
+          manifest-path: packaging/flatpak/io.github.elblasy33.AuroraWaves.yml
+          cache-key: flatpak-builder-${{ github.sha }}
