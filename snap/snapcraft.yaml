@@ -27,15 +27,10 @@ apps:
     common-id: io.github.elblasy33.AuroraWaves
     extensions: [gnome]          # graphics stack, fonts, GLib typelibs (MPRIS)
     plugs: [network, audio-playback, home, removable-media]
-    slots: [mpris]
+    slots: [mpris]               # org.mpris.MediaPlayer2.aurora-waves (the snap's name: no store review)
     environment:
       # mpv and its libraries come from Ubuntu 24.04 packages inside the snap
       LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/blas:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/lapack
-
-slots:
-  mpris:
-    interface: mpris
-    name: AuroraWaves            # org.mpris.MediaPlayer2.AuroraWaves
 
 parts:
   aurora-waves:

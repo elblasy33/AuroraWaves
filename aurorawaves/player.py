@@ -14,7 +14,9 @@ from .core import radiod, ytmusic
 
 radiod.CTL_SOCK = os.path.join(paths.RUN, "aurora-waves-app.sock")        # unused in-app
 radiod.MPV_SOCK = os.path.join(paths.RUN, "aurora-waves-app-mpv.sock")
-radiod.BUS_NAME = "org.mpris.MediaPlayer2.AuroraWaves"
+# In a snap the mpris slot owns org.mpris.MediaPlayer2.<snap name> without a store review
+# (a custom name needs one), so the bus name follows the snap's name there.
+radiod.BUS_NAME = "org.mpris.MediaPlayer2." + (os.environ.get("SNAP_INSTANCE_NAME") or "AuroraWaves")
 radiod.APP_NAME = APP_NAME
 radiod.DESKTOP_ID = APP_ID
 radiod.YTDLP_WRAPPER = ytmusic.YTDLP_WRAPPER
