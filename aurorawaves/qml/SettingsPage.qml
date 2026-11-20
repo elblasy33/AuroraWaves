@@ -129,7 +129,7 @@ Item {
                 Row2 {
                     label: page.app.t("الإبقاء في شريط النظام عند الإغلاق")
                     hint: Backend.trayAvailable ? "" : page.app.t("شريط النظام غير متاح في سطح المكتب الحالي")
-                    GlassSwitch { accent: page.app.accent; enabled: Backend.trayAvailable; checked: Prefs.closeToTray; onToggled: Prefs.closeToTray = checked }
+                    GlassSwitch { accent: page.app.accent; enabled: Backend.trayAvailable; checked: Prefs.keepInTray; onToggled: Prefs.keepInTray = checked }
                 }
                 Row2 {
                     label: page.app.t("تشغيل آخر محطة عند فتح التطبيق")

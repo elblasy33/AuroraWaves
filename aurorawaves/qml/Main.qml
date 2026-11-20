@@ -42,6 +42,18 @@ QQC2.ApplicationWindow {
     palette.dark: Qt.rgba(Theme.textColor.r, Theme.textColor.g, Theme.textColor.b, 0.4)
 
     property string page: Prefs.lastPage
+    property bool trayNoticeShown: false
+    // tray menu in the app's language
+    function trayLabels() {
+        Backend.setTrayLabels([app.wantPlaying ? app.t("إيقاف") : app.t("تشغيل"), app.t("التالي"),
+                               app.t("إظهار النافذة"), app.t("خروج")])
+    }
+    Connections {
+        target: app
+        function onWantPlayingChanged() { win.trayLabels() }
+        function onLangChanged() { win.trayLabels() }
+    }
+    Component.onCompleted: trayLabels()
     property bool nowOpen: false
     // size modes: wide (sidebar) · compact (icon rail) · narrow (bottom tabs) · mini (player only)
     readonly property bool mini: width < gu * 26 || height < gu * 20
@@ -199,9 +211,13 @@ QQC2.ApplicationWindow {
         }
     }
     onClosing: function (close) {
-        if (Prefs.closeToTray && Backend.trayAvailable) {
+        if (Prefs.keepInTray && Backend.trayAvailable) {
             close.accepted = false
             win.hide()
+            if (!win.trayNoticeShown && app.wantPlaying) {
+                win.trayNoticeShown = true
+                Backend.trayMessage(Backend.appName, app.t("ما زال يعمل في شريط النظام. للإغلاق: أيقونة التطبيق ← خروج."))
+            }
         } else {
             Qt.quit()
         }

@@ -145,6 +145,20 @@ class Backend(QObject):
             out.append(st)
         return json.dumps(out, ensure_ascii=False)
 
+    # ---------------------------------------------------------------- tray
+    tray_labels_hook = None
+    tray_message_hook = None
+
+    @Slot("QStringList")
+    def setTrayLabels(self, labels):
+        if self.tray_labels_hook:
+            self.tray_labels_hook(labels)
+
+    @Slot(str, str)
+    def trayMessage(self, title, text):
+        if self.tray_message_hook:
+            self.tray_message_hook(title, text)
+
     @Slot(str)
     def openUrl(self, url):
         QDesktopServices.openUrl(QUrl(url))

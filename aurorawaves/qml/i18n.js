@@ -361,5 +361,8 @@ var EN = {
     "ملف واحد، أو مجلد كامل، أو قائمة تشغيل M3U/PLS. تُشغَّل بالترتيب أو عشوائيًا.": "A single file, a whole folder or an M3U/PLS playlist, in order or shuffled.",
     "اكتشف إذاعات العالم من تبويب «اكتشف»، أو أضف رابطًا بنفسك.": "Find world radio in the Discover tab, or add a link yourself.",
     "استيراد محطاتك من ودجت أمواج أورورا": "Import your stations from the Aurora Waves widget",
-    "يوتيوب": "YouTube"
+    "يوتيوب": "YouTube",
+    "ما زال يعمل في شريط النظام. للإغلاق: أيقونة التطبيق ← خروج.": "Still running in the system tray. To quit: the app's tray icon → Quit.",
+    "إظهار النافذة": "Show window",
+    "خروج": "Quit"
 }

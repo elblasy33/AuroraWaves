@@ -16,7 +16,7 @@ QtObject {
     property bool showEqualizer: true
     property bool showStreamInfo: true
     property bool showGroups: true
-    property bool closeToTray: true
+    property bool keepInTray: false           // closing the window keeps playing in the tray
     property bool resumeOnStart: false
     property bool mprisEnabled: true
     property int volume: 70
@@ -27,7 +27,7 @@ QtObject {
 
     readonly property var keys: ["language", "theme", "glassOpacity", "auroraEnabled", "auroraStrength",
         "animations", "logoShape", "useStationAccent", "showEqualizer", "showStreamInfo", "showGroups",
-        "closeToTray", "resumeOnStart", "mprisEnabled", "volume", "lastStation", "sidebarCollapsed",
+        "keepInTray", "resumeOnStart", "mprisEnabled", "volume", "lastStation", "sidebarCollapsed",
         "showQueuePanel", "lastPage"]
     property bool loaded: false
 
@@ -54,7 +54,7 @@ QtObject {
     onLanguageChanged: changed();       onThemeChanged: changed();          onGlassOpacityChanged: changed()
     onAuroraEnabledChanged: changed();  onAuroraStrengthChanged: changed(); onAnimationsChanged: changed()
     onLogoShapeChanged: changed();      onUseStationAccentChanged: changed(); onShowEqualizerChanged: changed()
-    onShowStreamInfoChanged: changed(); onShowGroupsChanged: changed();     onCloseToTrayChanged: changed()
+    onShowStreamInfoChanged: changed(); onShowGroupsChanged: changed();     onKeepInTrayChanged: changed()
     onResumeOnStartChanged: changed();  onMprisEnabledChanged: changed();   onVolumeChanged: changed()
     onLastStationChanged: changed();    onSidebarCollapsedChanged: changed(); onShowQueuePanelChanged: changed()
     onLastPageChanged: changed()

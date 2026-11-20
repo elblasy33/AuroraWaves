@@ -21,6 +21,33 @@ radiod.YTDLP_WRAPPER = ytmusic.YTDLP_WRAPPER
 radiod.install_desktop_entry = lambda: None        # the app ships a real .desktop file
 
 
+def _die_with_parent():
+    """Child setup: if the app goes away (crash, kill), mpv stops instead of playing on alone."""
+    try:
+        import ctypes
+        import signal
+        ctypes.CDLL("libc.so.6", use_errno=True).prctl(1, signal.SIGTERM)   # PR_SET_PDEATHSIG
+    except Exception:
+        pass
+
+
+class _Subprocess:
+    """radiod's view of `subprocess`: the same module, with mpv tied to the app's life."""
+    def __getattr__(self, name):
+        import subprocess
+        return getattr(subprocess, name)
+
+    @staticmethod
+    def Popen(args, **kw):
+        import subprocess
+        if args and args[0] == "mpv":
+            kw.setdefault("preexec_fn", _die_with_parent)
+        return subprocess.Popen(args, **kw)
+
+
+radiod.subprocess = _Subprocess()
+
+
 class Player(radiod.Daemon):
     """radiod.Daemon plus what a windowed app adds: MPRIS Raise/Quit act on the window."""
 

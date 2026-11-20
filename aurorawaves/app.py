@@ -85,6 +85,13 @@ def main():
         tray.show()
         holder["tray"], holder["menu"] = tray, menu
         backend.tray_available = True
+        actions = menu.actions()
+
+        def labels(texts):
+            for act, text in zip(actions, texts):
+                act.setText(text)
+        backend.tray_labels_hook = labels
+        backend.tray_message_hook = lambda title, text: tray.showMessage(title, text, QIcon(ICON), 6000)
 
     engine = QQmlApplicationEngine()
     engine.addImageProvider("icons", IconProvider())
