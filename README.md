@@ -18,6 +18,14 @@ the same engine and look, with room to breathe. It runs on any desktop (GNOME, K
   media keys and MPRIS, keyboard shortcuts, dark/light themes, English and Arabic (RTL).
 - Imports the stations of the Aurora Waves Plasma widget.
 
+## Install for your user (no root)
+
+```sh
+sudo apt install mpv python3-gi python3-venv      # Debian/Ubuntu, once
+tools/install-local.sh                            # app menu entry, icon, `aurora-waves` command
+tools/uninstall-local.sh [--purge]                # remove (--purge also deletes stations and settings)
+```
+
 ## Run from source
 
 ```sh
