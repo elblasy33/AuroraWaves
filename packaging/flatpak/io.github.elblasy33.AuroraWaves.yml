@@ -1,7 +1,7 @@
 # Flatpak manifest for Flathub.
 #   flatpak-builder --user --install --force-clean build packaging/flatpak/io.github.elblasy33.AuroraWaves.yml
 # Python dependencies: regenerate python3-requirements.json with
-#   flatpak-pip-generator --runtime=org.kde.Sdk//6.11 ytmusicapi
+#   pure-Python wheels from PyPI with their sha256 (ytmusicapi, yt-dlp and their dependencies)
 id: io.github.elblasy33.AuroraWaves
 runtime: org.kde.Platform
 runtime-version: '6.11'
@@ -37,7 +37,7 @@ modules:
         sha256: 4c80598ade17fbaa7798e01a25d0bf29ce109740786026a074c5c62bb3e79d23
 
   - mpv.yaml
-  - yt-dlp.yaml
+  - yt-dlp-js.yaml
 
   - name: aurora-waves
     buildsystem: simple

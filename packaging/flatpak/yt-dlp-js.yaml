@@ -1,6 +1,9 @@
-# Adapted from Flathub's Celluloid manifest (same sources and checksums).
-# yt-dlp needs deno for YouTube's JavaScript challenges.
-name: yt-dlp
+# deno and yt-dlp-ejs, which yt-dlp needs for YouTube's JavaScript challenges
+# (from Flathub's Celluloid manifest). yt-dlp itself is a Python package in python3-requirements.json:
+# the app imports it and runs it as `python -m yt_dlp`.
+name: yt-dlp-js
+buildsystem: simple
+build-commands: []
 modules:
 - name: deno
   buildsystem: simple
@@ -37,19 +40,3 @@ modules:
       type: pypi
       name: yt-dlp-ejs
       packagetype: bdist_wheel
-no-autogen: true
-no-make-install: true
-make-args:
-- yt-dlp
-- PYTHON=/usr/bin/python3
-post-install:
-- install yt-dlp /app/bin
-sources:
-- type: git
-  url: https://github.com/yt-dlp/yt-dlp.git
-  tag: 2026.10.26
-  commit: f264a6cbd1f630894da0f368df00f8aae50140e0
-  x-checker-data:
-    type: git
-    tag-pattern: ^([\d.]+)$
-    is-important: true
