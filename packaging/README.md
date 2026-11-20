@@ -3,7 +3,7 @@
 | Store | File | Build |
 |---|---|---|
 | Flathub | `flatpak/io.github.elblasy33.AuroraWaves.yml` (+ `mpv.yaml`, `yt-dlp.yaml`) | `flatpak-builder --user --install --force-clean build packaging/flatpak/io.github.elblasy33.AuroraWaves.yml` |
-| Snap Store | `snap/snapcraft.yaml` (copy to `snap/` at the project root) | `snapcraft pack` |
+| Snap Store | `snap/snapcraft.yaml` (project root) | `snapcraft pack`; CI: `.github/workflows/snap.yml` builds, tests, uploads tags to `edge` |
 | AppImage | `appimage/build.sh` (+ `in-container.sh`) | `packaging/appimage/build.sh` (Docker, Ubuntu 22.04 base) |
 
 **AppImage: builds and works** (radio, YouTube Music, MPRIS with its own GLib, bundled mpv and
@@ -33,4 +33,5 @@ Releases and must not be used for a Flathub submission.
 | `Flatpak` | builds the `.flatpak` bundle with Flathub's builder action |
 | `Flatpak test` | installs the bundle and checks libraries, radio playback, yt-dlp and the window |
 | `Flathub lint` | Flathub's linter on the manifest |
+| `Snap` | builds the snap, tests it installed, uploads version tags to the `edge` channel |
 

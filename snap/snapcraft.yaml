@@ -1,0 +1,58 @@
+# Snap Store package. Built and tested by .github/workflows/snap.yml (snapcraft pack).
+name: aurora-waves
+title: Aurora Waves
+base: core24
+version: '0.1.3'
+summary: World radio, YouTube Music and your own music
+description: |
+  A frosted-glass music player: tens of thousands of live radio stations, YouTube Music
+  (search, queues, synced lyrics, optional sign-in) and your own files, with an animated aurora,
+  media keys and a tray icon. English and Arabic.
+
+  Not affiliated with Google or YouTube.
+license: GPL-2.0-or-later
+icon: data/icons/hicolor/scalable/apps/io.github.elblasy33.AuroraWaves.svg
+website: https://github.com/elblasy33/AuroraWaves
+source-code: https://github.com/elblasy33/AuroraWaves
+issues: https://github.com/elblasy33/AuroraWaves/issues
+grade: stable
+confinement: strict
+platforms:
+  amd64:
+
+apps:
+  aurora-waves:
+    command: bin/aurora-waves
+    desktop: usr/share/applications/io.github.elblasy33.AuroraWaves.desktop
+    common-id: io.github.elblasy33.AuroraWaves
+    extensions: [gnome]          # graphics stack, fonts, GLib typelibs (MPRIS)
+    plugs: [network, audio-playback, home, removable-media]
+    slots: [mpris]
+    environment:
+      # mpv and its libraries come from Ubuntu 24.04 packages inside the snap
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/blas:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/lapack
+
+slots:
+  mpris:
+    interface: mpris
+    name: AuroraWaves            # org.mpris.MediaPlayer2.AuroraWaves
+
+parts:
+  aurora-waves:
+    plugin: python
+    source: .
+    python-packages: [PySide6-Essentials, ytmusicapi, yt-dlp, PyGObject]
+    build-packages: [pkg-config, libgirepository-2.0-dev, libcairo2-dev, meson, ninja-build]
+    stage-packages:
+      - mpv
+      - libxcb-cursor0
+      - libxcb-icccm4
+      - libxcb-image0
+      - libxcb-keysyms1
+      - libxcb-render-util0
+      - libxcb-xkb1
+      - libxkbcommon-x11-0
+    override-build: |
+      craftctl default
+      install -Dm644 data/io.github.elblasy33.AuroraWaves.desktop -t $CRAFT_PART_INSTALL/usr/share/applications
+      sed -i 's|^Icon=.*|Icon=${SNAP}/meta/gui/icon.svg|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.elblasy33.AuroraWaves.desktop

@@ -1,0 +1,76 @@
+# Builds the snap, tests it installed on Ubuntu 24.04, and (on version tags) uploads it to the
+# Snap Store's edge channel with the SNAPCRAFT_STORE_CREDENTIALS secret.
+name: Snap
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths:
+      - "aurorawaves/**"
+      - "data/**"
+      - "snap/**"
+      - "pyproject.toml"
+      - ".github/workflows/snap.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    outputs:
+      snap: ${{ steps.build.outputs.snap }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snapcore/action-build@v1
+        id: build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: snap
+          path: ${{ steps.build.outputs.snap }}
+
+  test:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: snap
+      - name: Install
+        run: |
+          sudo snap install --dangerous ./*.snap
+          snap connections aurora-waves
+      - name: Libraries and mpv inside the snap
+        run: |
+          snap run --shell aurora-waves -c '
+            mpv --version | head -1
+            "$SNAP/bin/python3" -c "import gi, PySide6, ytmusicapi, yt_dlp; from gi.repository import Gio; print(\"PySide6\", PySide6.__version__, \"yt-dlp\", yt_dlp.version.__version__)"
+            "$SNAP/bin/python3" -c "from aurorawaves.core import ytmusic; s = ytmusic.status(); print(\"YouTube Music ready:\", s[\"ready\"], \"managed:\", s[\"managed\"]); assert s[\"ready\"]"
+          '
+      - name: mpv plays a radio stream
+        run: snap run --shell aurora-waves -c 'mpv --no-video --ao=null --length=5 https://stream.zeno.fm/5277mqf2sxhvv'
+      - name: The window opens
+        run: |
+          sudo apt-get install -y -qq xvfb >/dev/null
+          SHOT=$HOME/snap/aurora-waves/common/shot.png
+          AURORA_SHOT=$SHOT AURORA_SHOT_MS=15000 timeout 90 xvfb-run -a -s "-screen 0 1280x800x24" aurora-waves || true
+          cp $SHOT snap-shot.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: snap-screenshot
+          path: snap-shot.png
+
+  publish:
+    needs: [build, test]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: snap
+      - uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: ${{ needs.build.outputs.snap }}
+          release: edge
