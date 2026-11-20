@@ -18,6 +18,18 @@ the same engine and look, with room to breathe. It runs on any desktop (GNOME, K
   media keys and MPRIS, keyboard shortcuts, dark/light themes, English and Arabic (RTL).
 - Imports the stations of the Aurora Waves Plasma widget.
 
+## Download
+
+**AppImage** (any distribution with glibc 2.35+: Ubuntu 22.04, Fedora 36, Debian 12 and newer):
+[Aurora_Waves-0.1.0-x86_64.AppImage](https://github.com/elblasy33/aurora-waves-app/releases/latest)
+
+```sh
+chmod +x Aurora_Waves-0.1.0-x86_64.AppImage
+./Aurora_Waves-0.1.0-x86_64.AppImage
+```
+
+Everything is inside (Python, Qt, mpv, yt-dlp). Flathub and Snap Store packages are coming.
+
 ## Install for your user (no root)
 
 ```sh
