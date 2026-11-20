@@ -18,6 +18,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
       - name: Lint the manifest
         run: flatpak-builder-lint --exceptions manifest packaging/flatpak/io.github.elblasy33.AuroraWaves.yml

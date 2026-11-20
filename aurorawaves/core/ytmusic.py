@@ -93,6 +93,12 @@ def write_wrapper():
     os.chmod(YTDLP_WRAPPER, 0o755)
 
 
+# Store packages (Flatpak, Snap) ship ytmusicapi and yt-dlp and update them through the store:
+# there the app never downloads code itself, and browser profiles are outside the sandbox.
+IN_FLATPAK = os.path.exists("/.flatpak-info")
+MANAGED = IN_FLATPAK or bool(os.environ.get("SNAP"))
+
+
 def status():
     v = versions()
     ready = bool(v["ytmusicapi"] and v["ytdlp"])
@@ -102,11 +108,14 @@ def status():
         days = (time.time() - os.path.getmtime(STAMP)) / 86400
     except OSError:
         days = -1
+    if MANAGED:
+        days = 0                      # nothing for the app to update
     acc = read_json(ACCOUNT) if os.path.exists(AUTH) else None
     return {"ready": ready, "ytmusicapi": v["ytmusicapi"], "ytdlp": v["ytdlp"],
             "updatedDays": round(days, 1), "signedIn": bool(acc), "account": acc or {},
-            "browsers": [b for b, dirs in BROWSER_DIRS.items()
-                         if any(os.path.isdir(os.path.expanduser(d)) for d in dirs)]}
+            "managed": MANAGED,
+            "browsers": [] if MANAGED else [b for b, dirs in BROWSER_DIRS.items()
+                                            if any(os.path.isdir(os.path.expanduser(d)) for d in dirs)]}
 
 
 def read_json(path):
@@ -518,6 +527,8 @@ def dispatch(cmd, arg="-"):
     try:
         if cmd == "status":
             return status()
+        if cmd in ("setup", "update") and MANAGED:
+            return status()           # the store keeps them current
         if cmd == "setup":
             pip_install(["ytmusicapi", "yt-dlp"])
             return status()

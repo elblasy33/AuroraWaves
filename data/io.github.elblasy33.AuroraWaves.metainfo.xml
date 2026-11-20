@@ -35,15 +35,15 @@
   <screenshots>
     <screenshot type="default">
       <caption>Home: your stations and YouTube Music suggestions</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/main/docs/screenshots/home.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.1/docs/screenshots/home.png</image>
     </screenshot>
     <screenshot>
       <caption>YouTube Music</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/main/docs/screenshots/youtube.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.1/docs/screenshots/youtube.png</image>
     </screenshot>
     <screenshot>
       <caption>World radio</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/main/docs/screenshots/radio.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.1/docs/screenshots/radio.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>
@@ -70,6 +70,15 @@
     <color type="primary" scheme_preference="dark">#8a1538</color>
   </branding>
   <releases>
+    <release version="0.1.1" date="2026-11-20">
+      <description>
+        <ul>
+          <li>The window shrinks down to a mini player; bottom tabs on narrow windows</li>
+          <li>Closing the window quits; keeping the app in the tray is optional</li>
+          <li>Store packages never download code; they get yt-dlp updates through the store</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-11-20">
       <description>
         <p>First version of the desktop app.</p>
