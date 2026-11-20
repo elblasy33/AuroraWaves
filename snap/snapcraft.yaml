@@ -2,7 +2,7 @@
 name: aurora-waves
 title: Aurora Waves
 base: core24
-version: '0.1.5'
+version: '0.1.6'
 summary: World radio, YouTube Music and your own music
 description: |
   A frosted-glass music player: tens of thousands of live radio stations, YouTube Music
@@ -36,7 +36,7 @@ parts:
   aurora-waves:
     plugin: python
     source: .
-    python-packages: [PySide6-Essentials, ytmusicapi, yt-dlp, PyGObject]
+    python-packages: [PySide6-Essentials, ytmusicapi, "yt-dlp[curl-cffi]", PyGObject]   # curl-cffi: browser impersonation (Dailymotion)
     build-packages: [pkg-config, libgirepository-2.0-dev, libcairo2-dev, meson, ninja-build]
     stage-packages:
       - mpv

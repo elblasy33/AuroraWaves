@@ -530,10 +530,10 @@ def dispatch(cmd, arg="-"):
         if cmd in ("setup", "update") and MANAGED:
             return status()           # the store keeps them current
         if cmd == "setup":
-            pip_install(["ytmusicapi", "yt-dlp"])
+            pip_install(["ytmusicapi", "yt-dlp[curl-cffi]"])
             return status()
         if cmd == "update":
-            pip_install(["yt-dlp"])
+            pip_install(["yt-dlp[curl-cffi]"])
             return status()
         if cmd == "logout":
             return logout()

@@ -60,6 +60,15 @@ jobs:
           chmod +x Aurora_Waves-*.AppImage
           ./Aurora_Waves-*.AppImage --appimage-extract '*.desktop' >/dev/null
           desktop-file-validate squashfs-root/*.desktop
+      - name: yt-dlp can impersonate a browser (Dailymotion needs it)
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+        run: |
+          ./Aurora_Waves-*.AppImage --appimage-extract 'usr/python/*' >/dev/null
+          PATH="$PWD/squashfs-root/usr/python/bin:$PATH"; python3 -m yt_dlp --list-impersonate-targets 2>/dev/null | grep -iE "^chrome" | grep -viq unavailable && echo "impersonation: chrome available" || { echo "impersonation: NOT available"; exit 1; }
+      - name: A Dailymotion station (Maspero) resolves (Dailymotion may block CI)
+        continue-on-error: true
+        run: squashfs-root/usr/python/bin/python3 -m yt_dlp -g -f bestaudio/best https://www.dailymotion.com/video/x8n6dqq | cut -c1-60
       - name: Starts offline on X11 and shows its window
         env:
           APPIMAGE_EXTRACT_AND_RUN: "1"

@@ -14,6 +14,7 @@ python3 -c "import gi" 2>/dev/null || echo "⚠ python3-gi is not installed: sud
 [ -d .venv ] || python3 -m venv --system-site-packages .venv
 .venv/bin/pip install -q --disable-pip-version-check PySide6-Essentials ytmusicapi
 .venv/bin/pip install -q --disable-pip-version-check --upgrade --ignore-installed --no-deps yt-dlp
+.venv/bin/pip install -q --disable-pip-version-check "curl_cffi>=0.10,<0.18"   # yt-dlp browser impersonation
 .venv/bin/pip install -q --disable-pip-version-check --no-deps -e .
 
 mkdir -p "$BIN" "$DATA/applications" "$DATA/icons/hicolor/scalable/apps" "$DATA/metainfo"

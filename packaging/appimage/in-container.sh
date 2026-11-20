@@ -32,7 +32,7 @@ curl -sSfL "https://github.com/astral-sh/python-build-standalone/releases/downlo
 P=$APPDIR/usr/python/bin/python3
 $P -m pip install -q --disable-pip-version-check --root-user-action=ignore --upgrade pip
 # PyGObject 3.50 is the last one for girepository-1.0 (Ubuntu 22.04's GLib)
-$P -m pip install -q --disable-pip-version-check --root-user-action=ignore PySide6-Essentials ytmusicapi yt-dlp \
+$P -m pip install -q --disable-pip-version-check --root-user-action=ignore PySide6-Essentials ytmusicapi "yt-dlp[curl-cffi]" \
     "PyGObject<3.51" -Csetup-args=-Dpycairo=disabled
 # build the app from a copy: pip writes build/ and *.egg-info next to the sources
 mkdir -p $WORK/src

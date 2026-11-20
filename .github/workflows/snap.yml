@@ -46,6 +46,11 @@ jobs:
             "$SNAP/bin/python3" -c "import gi, PySide6, ytmusicapi, yt_dlp; from gi.repository import Gio; print(\"PySide6\", PySide6.__version__, \"yt-dlp\", yt_dlp.version.__version__)"
             "$SNAP/bin/python3" -c "from aurorawaves.core import ytmusic; s = ytmusic.status(); print(\"YouTube Music ready:\", s[\"ready\"], \"managed:\", s[\"managed\"]); assert s[\"ready\"]"
           '
+      - name: yt-dlp can impersonate a browser (Dailymotion needs it)
+        run: snap run --shell aurora-waves -c '"$SNAP/bin/python3" -m yt_dlp --list-impersonate-targets 2>/dev/null | grep -iE "^chrome" | grep -viq unavailable && echo "impersonation: chrome available" || { echo "impersonation: NOT available"; exit 1; }'
+      - name: A Dailymotion station (Maspero) resolves (Dailymotion may block CI)
+        continue-on-error: true
+        run: snap run --shell aurora-waves -c '"$SNAP/bin/python3" -m yt_dlp -g -f bestaudio/best https://www.dailymotion.com/video/x8n6dqq | cut -c1-60'
       - name: mpv plays a radio stream
         run: snap run --shell aurora-waves -c 'mpv --no-video --ao=null --length=5 https://stream.zeno.fm/5277mqf2sxhvv'
       - name: The window opens
