@@ -2,7 +2,7 @@
 name: aurora-waves
 title: Aurora Waves
 base: core24
-version: '0.1.3'
+version: '0.1.4'
 summary: World radio, YouTube Music and your own music
 description: |
   A frosted-glass music player: tens of thousands of live radio stations, YouTube Music

@@ -35,15 +35,15 @@
   <screenshots>
     <screenshot type="default">
       <caption>Home: your stations and YouTube Music suggestions</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.3/docs/screenshots/home.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.4/docs/screenshots/home.png</image>
     </screenshot>
     <screenshot>
       <caption>YouTube Music</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.3/docs/screenshots/youtube.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.4/docs/screenshots/youtube.png</image>
     </screenshot>
     <screenshot>
       <caption>World radio</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.3/docs/screenshots/radio.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.4/docs/screenshots/radio.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>
@@ -70,6 +70,14 @@
     <color type="primary" scheme_preference="dark">#8a1538</color>
   </branding>
   <releases>
+    <release version="0.1.4" date="2026-11-21">
+      <description>
+        <ul>
+          <li>Now on the Snap Store (edge channel first)</li>
+          <li>Every package is built and tested automatically before it is published</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.3" date="2026-11-20">
       <description>
         <ul>
