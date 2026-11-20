@@ -24,6 +24,8 @@ jobs:
       options: --privileged
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true          # packaging/flatpak/shared-modules (Flathub's shared modules)
       - uses: flathub-infra/flatpak-github-actions/flatpak-builder@933e9e8ca36e85046ebca8e211f0785c6becac40
         with:
           bundle: aurora-waves.flatpak
