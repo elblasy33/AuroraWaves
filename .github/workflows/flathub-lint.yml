@@ -1,0 +1,23 @@
+# Flathub's own linter on the manifest (what Flathub's reviewers and CI check first).
+name: Flathub lint
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "packaging/flatpak/**"
+      - "data/**"
+      - ".github/workflows/flathub-lint.yml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub/flatpak-builder-lint:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Lint the manifest
+        run: flatpak-builder-lint --exceptions manifest packaging/flatpak/io.github.elblasy33.AuroraWaves.yml
