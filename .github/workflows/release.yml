@@ -1,0 +1,77 @@
+# Publish a GitHub release from builds that already passed their tests, without moving the files
+# through anyone's computer: Actions → Release → Run → tag + the two run ids.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v0.1.2)"
+        required: true
+      appimage_run:
+        description: "Run id of the AppImage build (with its test passed)"
+        required: true
+      flatpak_run:
+        description: "Run id of the Flatpak build (with its test passed)"
+        required: true
+
+permissions:
+  contents: write        # create the release
+  actions: read          # read artifacts of other runs
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.event.inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: appimage
+          run-id: ${{ github.event.inputs.appimage_run }}
+          github-token: ${{ github.token }}
+          path: out
+      - uses: actions/download-artifact@v4
+        with:
+          name: aurora-waves-x86_64.flatpak
+          run-id: ${{ github.event.inputs.flatpak_run }}
+          github-token: ${{ github.token }}
+          path: out
+      - name: Name the files after the version
+        run: |
+          V=${TAG#v}
+          mv out/aurora-waves.flatpak "out/Aurora_Waves-$V-x86_64.flatpak"
+          ls -l out
+          test -e "out/Aurora_Waves-$V-x86_64.AppImage"
+      - name: Release notes from the metainfo
+        run: |
+          V=${TAG#v}
+          python3 - "$V" > notes.md <<'EOF'
+          import re, sys, xml.etree.ElementTree as ET
+          v = sys.argv[1]
+          rel = ET.parse("data/io.github.elblasy33.AuroraWaves.metainfo.xml").find(f".//release[@version='{v}']")
+          items = [li.text for li in rel.iter("li")] if rel is not None else []
+          print("\n".join("- " + i for i in items) or "Aurora Waves " + v)
+          print(f"""
+          ## Install
+
+          **AppImage** (any distribution with glibc 2.35+: Ubuntu 22.04, Fedora 36, Debian 12 and newer)
+          ```sh
+          chmod +x Aurora_Waves-{v}-x86_64.AppImage
+          ./Aurora_Waves-{v}-x86_64.AppImage
+          ```
+          **Flatpak** (needs the KDE 6.11 runtime from Flathub; Flatpak fetches it)
+          ```sh
+          flatpak install --user Aurora_Waves-{v}-x86_64.flatpak
+          ```
+          Not affiliated with Google or YouTube.""".replace("\n          ", "\n"))
+          EOF
+          cat notes.md
+      - name: Publish
+        run: |
+          gh release create "$TAG" out/*.AppImage out/*.zsync out/*.flatpak \
+            --title "Aurora Waves ${TAG#v}" --notes-file notes.md --latest

@@ -20,15 +20,22 @@ the same engine and look, with room to breathe. It runs on any desktop (GNOME, K
 
 ## Download
 
-**AppImage** (any distribution with glibc 2.35+: Ubuntu 22.04, Fedora 36, Debian 12 and newer):
-[Aurora_Waves-0.1.0-x86_64.AppImage](https://github.com/elblasy33/AuroraWaves/releases/latest)
+From the [latest release](https://github.com/elblasy33/AuroraWaves/releases/latest):
+
+**AppImage**: one file, everything inside (Python, Qt, mpv, yt-dlp). Runs on distributions with
+glibc 2.35 or newer: Ubuntu 22.04, Fedora 36, Debian 12 and later.
 
 ```sh
-chmod +x Aurora_Waves-0.1.0-x86_64.AppImage
-./Aurora_Waves-0.1.0-x86_64.AppImage
+chmod +x Aurora_Waves-*-x86_64.AppImage
+./Aurora_Waves-*-x86_64.AppImage
 ```
 
-Everything is inside (Python, Qt, mpv, yt-dlp). Flathub and Snap Store packages are coming.
+**Flatpak**: sandboxed; Flatpak fetches the KDE 6.11 runtime from Flathub on first install.
+
+```sh
+flatpak install --user Aurora_Waves-*-x86_64.flatpak
+flatpak run io.github.elblasy33.AuroraWaves
+```
 
 ## Install for your user (no root)
 
