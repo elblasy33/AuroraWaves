@@ -364,5 +364,8 @@ var EN = {
     "يوتيوب": "YouTube",
     "ما زال يعمل في شريط النظام. للإغلاق: أيقونة التطبيق ← خروج.": "Still running in the system tray. To quit: the app's tray icon → Quit.",
     "إظهار النافذة": "Show window",
-    "خروج": "Quit"
+    "خروج": "Quit",
+    "لا يوجد اتصال بالإنترنت": "No internet connection",
+    "ستظهر هنا اقتراحات يوتيوب ميوزك عند عودة الاتصال. موسيقاك المحفوظة على جهازك تعمل الآن.": "YouTube Music suggestions will appear here when you are back online. The music on this computer works now.",
+    "إعادة المحاولة": "Try again"
 }

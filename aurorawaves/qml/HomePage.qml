@@ -14,6 +14,7 @@ Item {
     readonly property real gu: Units.gridUnit
     property var shelves: []
     property bool loading: false
+    property bool offline: false            // the feed could not be reached
 
     readonly property string greeting: {
         var h = new Date().getHours()
@@ -23,9 +24,11 @@ Item {
     function load() {
         if (loading || shelves.length > 0 || !app.ytStatus.ready) return
         loading = true
+        offline = false
         app.runYt("home", JSON.stringify({ lang: app.lang, country: app.systemCountry }), function (r) {
             home.loading = false
-            if (r && r.shelves) home.shelves = r.shelves
+            if (r && r.shelves && r.shelves.length) home.shelves = r.shelves
+            else home.offline = true
         })
     }
     Component.onCompleted: app.ytCheck(function () { home.load() })
@@ -192,6 +195,32 @@ Item {
                         QQC2.Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; color: Theme.dimTextColor; text: home.app.t("فعّله لتظهر هنا الأغاني والقوائم المقترحة بلغتك.") }
                     }
                     GlassButton { text: home.app.t("تفعيل"); filled: true; accent: "#e53935"; onClicked: home.openPage("youtube") }
+                }
+            }
+            // no connection: say so, and what still works
+            GlassPanel {
+                Layout.fillWidth: true
+                visible: home.offline && home.shelves.length === 0
+                implicitHeight: offRow.implicitHeight + gu * 1.6
+                radius: 20
+                RowLayout {
+                    id: offRow
+                    anchors.fill: parent
+                    anchors.margins: gu * 0.8
+                    spacing: gu
+                    Kirigami.Icon { source: "network-disconnect"; implicitWidth: Units.iconSizes.large; color: Theme.dimTextColor }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+                        Kirigami.Heading { text: home.app.t("لا يوجد اتصال بالإنترنت"); level: 3 }
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            wrapMode: Text.WordWrap
+                            color: Theme.dimTextColor
+                            text: home.app.t("ستظهر هنا اقتراحات يوتيوب ميوزك عند عودة الاتصال. موسيقاك المحفوظة على جهازك تعمل الآن.")
+                        }
+                    }
+                    GlassButton { text: home.app.t("إعادة المحاولة"); iconName: "view-refresh"; onClicked: home.load() }
                 }
             }
             Repeater {
