@@ -52,7 +52,14 @@ jobs:
           apt-get update -qq
           DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
             xvfb xauth libgl1 libegl1 libfontconfig1 fonts-dejavu-core libdbus-1-3 libxkbcommon0 \
-            libx11-xcb1 libxcb1 libxrender1 libxi6 libglib2.0-0 >/dev/null
+            libx11-xcb1 libxcb1 libxrender1 libxi6 libglib2.0-0 desktop-file-utils >/dev/null
+      - name: Desktop file passes Ubuntu 22.04's desktop-file-validate (as AppImageHub checks it)
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+        run: |
+          chmod +x Aurora_Waves-*.AppImage
+          ./Aurora_Waves-*.AppImage --appimage-extract '*.desktop' >/dev/null
+          desktop-file-validate squashfs-root/*.desktop
       - name: Starts offline on X11 and shows its window
         env:
           APPIMAGE_EXTRACT_AND_RUN: "1"

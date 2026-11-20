@@ -13,4 +13,3 @@ Categories=AudioVideo;Audio;Player;Music;
 Keywords=radio;internet radio;music;youtube music;stream;player;lyrics;mpris;راديو;موسيقى;إذاعة;
 StartupNotify=true
 StartupWMClass=aurora-waves
-SingleMainWindow=true
