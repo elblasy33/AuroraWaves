@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aurora-waves"
+version = "0.1.0"
+description = "World radio, YouTube Music and your own music in one frosted-glass player"
+readme = "README.md"
+license = { text = "GPL-2.0-or-later" }
+requires-python = ">=3.10"
+dependencies = [
+    "PySide6-Essentials>=6.6",
+    "PyGObject>=3.42",
+    "ytmusicapi>=1.8",
+    "yt-dlp",
+]
+
+[project.scripts]
+aurora-waves = "aurorawaves.app:main"
+
+[tool.setuptools.packages.find]
+include = ["aurorawaves*"]
+
+[tool.setuptools.package-data]
+aurorawaves = ["qml/*.qml", "qml/*.js", "qml/kshim/*", "assets/*.svg", "assets/icons/*", "assets/logos/*"]

@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=Aurora Waves
+Name[ar]=أمواج أورورا
+GenericName=Music Player
+GenericName[ar]=مشغّل موسيقى
+Comment=World radio, YouTube Music and your own music in one frosted-glass player
+Comment[ar]=إذاعات العالم ويوتيوب ميوزك وموسيقاك في مشغّل زجاجي واحد
+Icon=io.github.elblasy33.AuroraWaves
+Exec=aurora-waves %U
+Terminal=false
+Categories=AudioVideo;Audio;Player;Music;
+Keywords=radio;internet radio;music;youtube music;stream;player;lyrics;mpris;راديو;موسيقى;إذاعة;
+StartupNotify=true
+StartupWMClass=aurora-waves
+SingleMainWindow=true

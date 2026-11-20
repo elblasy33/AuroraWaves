@@ -1,0 +1,41 @@
+# Snap Store package.   snapcraft pack   (from the project root, with this file in snap/)
+name: aurora-waves
+title: Aurora Waves
+base: core24
+version: '0.1.0'
+summary: World radio, YouTube Music and your own music
+description: |
+  A frosted-glass music player: tens of thousands of live radio stations, YouTube Music
+  (search, queues, synced lyrics, optional sign-in) and your own files, with an animated aurora,
+  media keys and a tray icon. English and Arabic.
+license: GPL-2.0-or-later
+icon: data/icons/hicolor/scalable/apps/io.github.elblasy33.AuroraWaves.svg
+grade: stable
+confinement: strict
+platforms:
+  amd64:
+
+apps:
+  aurora-waves:
+    command: bin/aurora-waves
+    desktop: usr/share/applications/io.github.elblasy33.AuroraWaves.desktop
+    common-id: io.github.elblasy33.AuroraWaves
+    extensions: [kde-neon-6]
+    plugs: [network, audio-playback, desktop, desktop-legacy, wayland, x11, opengl, home, removable-media]
+    slots: [mpris]
+
+slots:
+  mpris:
+    interface: mpris
+    name: AuroraWaves
+
+parts:
+  aurora-waves:
+    plugin: python
+    source: .
+    python-packages: [PySide6-Essentials, ytmusicapi, yt-dlp]
+    stage-packages: [mpv, ffmpeg, python3-gi, gir1.2-glib-2.0]
+    override-build: |
+      craftctl default
+      install -Dm644 data/io.github.elblasy33.AuroraWaves.desktop -t $CRAFT_PART_INSTALL/usr/share/applications
+      sed -i 's|^Icon=.*|Icon=${SNAP}/meta/gui/icon.svg|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.elblasy33.AuroraWaves.desktop

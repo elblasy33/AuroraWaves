@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.elblasy33.AuroraWaves</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+  <name>Aurora Waves</name>
+  <name xml:lang="ar">أمواج أورورا</name>
+  <summary>World radio, YouTube Music and your own music</summary>
+  <summary xml:lang="ar">إذاعات العالم ويوتيوب ميوزك وموسيقاك</summary>
+  <developer id="io.github.elblasy33">
+    <name>elblasy33</name>
+  </developer>
+  <description>
+    <p>A frosted-glass music player that brings three sources together, with an animated aurora that
+      takes its colors from what you are listening to.</p>
+    <ul>
+      <li>World radio: tens of thousands of live stations in 220+ countries from Radio Browser and
+        zeno.fm, by name, country and genre. Arabic searches also find Latin spellings.</li>
+      <li>YouTube Music (optional): search songs, artists and albums, a home feed in your language,
+        queues, similar-song radio and synced lyrics.</li>
+      <li>Optional sign-in through the browser you already use, for your liked songs, playlists,
+        history and personal recommendations.</li>
+      <li>Your own music: files, folders and M3U/PLS playlists, with shuffle, pause and seek.</li>
+      <li>Check and repair listens to every station to confirm real audio and suggests tested
+        replacements.</li>
+      <li>Media keys, desktop media controllers and the lock screen (MPRIS), and a tray icon.</li>
+      <li>English and Arabic, with left-to-right and right-to-left layouts.</li>
+    </ul>
+    <p>Not affiliated with Google or YouTube.</p>
+  </description>
+  <launchable type="desktop-id">io.github.elblasy33.AuroraWaves.desktop</launchable>
+  <url type="homepage">https://github.com/elblasy33/aurora-waves-app</url>
+  <url type="bugtracker">https://github.com/elblasy33/aurora-waves-app/issues</url>
+  <url type="vcs-browser">https://github.com/elblasy33/aurora-waves-app</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Home: your stations and YouTube Music suggestions</caption>
+      <image>https://raw.githubusercontent.com/elblasy33/aurora-waves-app/main/docs/screenshots/home.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>YouTube Music</caption>
+      <image>https://raw.githubusercontent.com/elblasy33/aurora-waves-app/main/docs/screenshots/youtube.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>World radio</caption>
+      <image>https://raw.githubusercontent.com/elblasy33/aurora-waves-app/main/docs/screenshots/radio.png</image>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Player</category>
+  </categories>
+  <keywords>
+    <keyword>radio</keyword>
+    <keyword>music</keyword>
+    <keyword>youtube music</keyword>
+    <keyword>lyrics</keyword>
+  </keywords>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">720</display_length>
+  </requires>
+  <branding>
+    <color type="primary" scheme_preference="light">#ff8a9e</color>
+    <color type="primary" scheme_preference="dark">#8a1538</color>
+  </branding>
+  <releases>
+    <release version="0.1.0" date="2026-11-20">
+      <description>
+        <p>First version of the desktop app.</p>
+      </description>
+    </release>
+  </releases>
+</component>

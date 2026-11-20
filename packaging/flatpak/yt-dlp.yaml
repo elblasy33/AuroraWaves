@@ -1,0 +1,55 @@
+# Adapted from Flathub's Celluloid manifest (same sources and checksums).
+# yt-dlp needs deno for YouTube's JavaScript challenges.
+name: yt-dlp
+modules:
+- name: deno
+  buildsystem: simple
+  build-commands:
+  - install -Dm755 deno /app/bin/deno
+  sources:
+  - type: archive
+    url: https://github.com/denoland/deno/releases/download/v2.9.8/deno-x86_64-unknown-linux-gnu.zip
+    sha256: e890975bc2549807bbcc0b584ffafda72cc7c93349dd99c80483dd784f6c4609
+    only-arches:
+    - x86_64
+    x-checker-data:
+      type: anitya
+      project-id: 133196
+      url-template: https://github.com/denoland/deno/releases/download/v$version/deno-x86_64-unknown-linux-gnu.zip
+  - type: archive
+    url: https://github.com/denoland/deno/releases/download/v2.9.8/deno-aarch64-unknown-linux-gnu.zip
+    sha256: d49596c20b9788cf8f5d8ddf644103d4bde56ed239753f0bdb92ba9361d51905
+    only-arches:
+    - aarch64
+    x-checker-data:
+      type: anitya
+      project-id: 133196
+      url-template: https://github.com/denoland/deno/releases/download/v$version/deno-aarch64-unknown-linux-gnu.zip
+- name: yt-dlp-ejs
+  buildsystem: simple
+  build-commands:
+  - pip3 install --prefix=/app yt_dlp_ejs*.whl
+  sources:
+  - type: file
+    url: https://files.pythonhosted.org/packages/e3/bd/520769863744b669440a924271a6159ddd82ad5ae26b4ac4d4b69e9f8d44/yt_dlp_ejs-0.8.0-py3-none-any.whl
+    sha256: 79300e5fca7f937a1eeede11f0456862c1b41107ce1d726871e0207424f4bdb4
+    x-checker-data:
+      type: pypi
+      name: yt-dlp-ejs
+      packagetype: bdist_wheel
+no-autogen: true
+no-make-install: true
+make-args:
+- yt-dlp
+- PYTHON=/usr/bin/python3
+post-install:
+- install yt-dlp /app/bin
+sources:
+- type: git
+  url: https://github.com/yt-dlp/yt-dlp.git
+  tag: 2026.10.26
+  commit: f264a6cbd1f630894da0f368df00f8aae50140e0
+  x-checker-data:
+    type: git
+    tag-pattern: ^([\d.]+)$
+    is-important: true

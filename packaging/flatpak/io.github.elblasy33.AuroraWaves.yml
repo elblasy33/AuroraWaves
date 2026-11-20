@@ -1,0 +1,51 @@
+# Flatpak manifest for Flathub.
+#   flatpak-builder --user --install --force-clean build packaging/flatpak/io.github.elblasy33.AuroraWaves.yml
+# Python dependencies: regenerate python3-requirements.json with
+#   flatpak-pip-generator --runtime=org.kde.Sdk//6.11 ytmusicapi
+id: io.github.elblasy33.AuroraWaves
+runtime: org.kde.Platform
+runtime-version: '6.11'
+sdk: org.kde.Sdk
+base: io.qt.PySide.BaseApp
+base-version: '6.11'
+command: aurora-waves
+finish-args:
+  - --share=network                 # radio streams, directories, YouTube Music
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --socket=pulseaudio
+  - --own-name=org.mpris.MediaPlayer2.AuroraWaves     # media keys, media controllers
+  - --talk-name=org.kde.StatusNotifierWatcher          # tray icon
+  - --filesystem=xdg-music:ro                          # your music folders
+  # optional: import the stations of the Aurora Waves Plasma widget
+  - --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc:ro
+cleanup-commands:
+  - /app/cleanup-BaseApp.sh
+modules:
+  - python3-requirements.json
+
+  - name: pygobject                  # MPRIS uses GLib's D-Bus API
+    buildsystem: meson
+    config-opts:
+      - -Dpycairo=disabled
+      - -Dtests=false
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/65/1e/d590f82e14db75945b03f6b63e0f19662e0340babd8f574fdb1bb5a015e2/pygobject-3.58.1.tar.gz
+        sha256: 4c80598ade17fbaa7798e01a25d0bf29ce109740786026a074c5c62bb3e79d23
+
+  - mpv.yaml
+  - yt-dlp.yaml
+
+  - name: aurora-waves
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-deps --no-build-isolation --prefix=/app .
+      - install -Dm644 data/io.github.elblasy33.AuroraWaves.desktop -t /app/share/applications
+      - install -Dm644 data/io.github.elblasy33.AuroraWaves.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 data/icons/hicolor/scalable/apps/io.github.elblasy33.AuroraWaves.svg -t /app/share/icons/hicolor/scalable/apps
+    sources:
+      - type: dir
+        path: ../..

@@ -1,0 +1,11 @@
+# Small stand-ins for the Kirigami pieces the interface uses, so the app needs no KDE libraries.
+singleton Theme 1.0 Theme.qml
+singleton Units 1.0 Units.qml
+singleton Prefs 1.0 Prefs.qml
+Icon 1.0 Icon.qml
+Heading 1.0 Heading.qml
+SearchField 1.0 SearchField.qml
+PlaceholderMessage 1.0 PlaceholderMessage.qml
+Separator 1.0 Separator.qml
+Action 1.0 Action.qml
+IconGroup 1.0 IconGroup.qml
