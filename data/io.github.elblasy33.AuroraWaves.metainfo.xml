@@ -29,21 +29,21 @@
     <p>Not affiliated with Google or YouTube.</p>
   </description>
   <launchable type="desktop-id">io.github.elblasy33.AuroraWaves.desktop</launchable>
-  <url type="homepage">https://github.com/elblasy33/aurora-waves-app</url>
-  <url type="bugtracker">https://github.com/elblasy33/aurora-waves-app/issues</url>
-  <url type="vcs-browser">https://github.com/elblasy33/aurora-waves-app</url>
+  <url type="homepage">https://github.com/elblasy33/AuroraWaves</url>
+  <url type="bugtracker">https://github.com/elblasy33/AuroraWaves/issues</url>
+  <url type="vcs-browser">https://github.com/elblasy33/AuroraWaves</url>
   <screenshots>
     <screenshot type="default">
       <caption>Home: your stations and YouTube Music suggestions</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/aurora-waves-app/main/docs/screenshots/home.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/main/docs/screenshots/home.png</image>
     </screenshot>
     <screenshot>
       <caption>YouTube Music</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/aurora-waves-app/main/docs/screenshots/youtube.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/main/docs/screenshots/youtube.png</image>
     </screenshot>
     <screenshot>
       <caption>World radio</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/aurora-waves-app/main/docs/screenshots/radio.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/main/docs/screenshots/radio.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>

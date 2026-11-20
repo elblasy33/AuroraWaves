@@ -21,7 +21,7 @@ the same engine and look, with room to breathe. It runs on any desktop (GNOME, K
 ## Download
 
 **AppImage** (any distribution with glibc 2.35+: Ubuntu 22.04, Fedora 36, Debian 12 and newer):
-[Aurora_Waves-0.1.0-x86_64.AppImage](https://github.com/elblasy33/aurora-waves-app/releases/latest)
+[Aurora_Waves-0.1.0-x86_64.AppImage](https://github.com/elblasy33/AuroraWaves/releases/latest)
 
 ```sh
 chmod +x Aurora_Waves-0.1.0-x86_64.AppImage

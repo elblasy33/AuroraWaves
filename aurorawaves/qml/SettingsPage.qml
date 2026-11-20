@@ -191,8 +191,8 @@ Item {
                 Flow {
                     Layout.fillWidth: true
                     spacing: gu * 0.5
-                    GlassButton { text: "GitHub"; iconName: "link"; onClicked: Backend.openUrl("https://github.com/elblasy33/aurora-waves-app") }
-                    GlassButton { text: page.app.t("الإبلاغ عن مشكلة"); iconName: "dialog-warning"; onClicked: Backend.openUrl("https://github.com/elblasy33/aurora-waves-app/issues") }
+                    GlassButton { text: "GitHub"; iconName: "link"; onClicked: Backend.openUrl("https://github.com/elblasy33/AuroraWaves") }
+                    GlassButton { text: page.app.t("الإبلاغ عن مشكلة"); iconName: "dialog-warning"; onClicked: Backend.openUrl("https://github.com/elblasy33/AuroraWaves/issues") }
                 }
             }
         }

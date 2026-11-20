@@ -74,7 +74,7 @@ echo "== AppImage"
 OUT=/src/dist/Aurora_Waves-$VERSION-x86_64.AppImage
 cd /src/dist
 ARCH=x86_64 $WORK/appimagetool --no-appstream \
-    -u "gh-releases-zsync|elblasy33|aurora-waves-app|latest|Aurora_Waves-*x86_64.AppImage.zsync" \
+    -u "gh-releases-zsync|elblasy33|AuroraWaves|latest|Aurora_Waves-*x86_64.AppImage.zsync" \
     $APPDIR $OUT >/dev/null
 chown "$HOST_UID:$HOST_GID" /src/dist /src/dist/* 2>/dev/null || true
 echo "built $OUT"
