@@ -7,6 +7,9 @@ PY=3.12.16+20261110
 WORK=/tmp/build
 APPDIR=$WORK/AppDir
 
+# leftovers of older builds that ran pip inside /src as root
+rm -rf /src/build /src/*.egg-info
+
 echo "== tools and libraries"
 apt-get update -qq
 apt-get install -y -qq --no-install-recommends ca-certificates curl file patchelf binutils \
@@ -28,7 +31,10 @@ $P -m pip install -q --disable-pip-version-check --root-user-action=ignore --upg
 # PyGObject 3.50 is the last one for girepository-1.0 (Ubuntu 22.04's GLib)
 $P -m pip install -q --disable-pip-version-check --root-user-action=ignore PySide6-Essentials ytmusicapi yt-dlp \
     "PyGObject<3.51" -Csetup-args=-Dpycairo=disabled
-$P -m pip install -q --disable-pip-version-check --root-user-action=ignore --no-deps /src
+# build the app from a copy: pip writes build/ and *.egg-info next to the sources
+mkdir -p $WORK/src
+tar -C /src --exclude=.venv --exclude=dist --exclude=build --exclude=.git -cf - . | tar -C $WORK/src -xf -
+$P -m pip install -q --disable-pip-version-check --root-user-action=ignore --no-deps $WORK/src
 # trim: tests and caches
 find $APPDIR/usr/python -name __pycache__ -prune -exec rm -rf {} +
 rm -rf $APPDIR/usr/python/lib/python3.12/test $APPDIR/usr/python/lib/python3.12/idlelib
@@ -51,8 +57,9 @@ install -Dm644 /src/data/$ID.desktop $APPDIR/$ID.desktop
 install -Dm644 /src/data/$ID.desktop $APPDIR/usr/share/applications/$ID.desktop
 install -Dm644 /src/data/$ID.metainfo.xml $APPDIR/usr/share/metainfo/$ID.appdata.xml
 install -Dm644 /src/data/icons/hicolor/scalable/apps/$ID.svg $APPDIR/usr/share/icons/hicolor/scalable/apps/$ID.svg
-cp /src/data/icons/hicolor/scalable/apps/$ID.svg $APPDIR/$ID.svg
-ln -sf $ID.svg $APPDIR/.DirIcon
+install -Dm644 /src/data/icons/hicolor/256x256/apps/$ID.png $APPDIR/usr/share/icons/hicolor/256x256/apps/$ID.png
+cp /src/data/icons/hicolor/256x256/apps/$ID.png $APPDIR/$ID.png      # .DirIcon must be a PNG
+ln -sf $ID.png $APPDIR/.DirIcon
 cat > $APPDIR/AppRun <<'RUN'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "$0")")"

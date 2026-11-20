@@ -19,6 +19,7 @@ python3 -c "import gi" 2>/dev/null || echo "⚠ python3-gi is not installed: sud
 mkdir -p "$BIN" "$DATA/applications" "$DATA/icons/hicolor/scalable/apps" "$DATA/metainfo"
 ln -sf "$SRC/.venv/bin/aurora-waves" "$BIN/aurora-waves"
 install -m644 data/icons/hicolor/scalable/apps/$APP_ID.svg "$DATA/icons/hicolor/scalable/apps/"
+install -Dm644 data/icons/hicolor/256x256/apps/$APP_ID.png "$DATA/icons/hicolor/256x256/apps/$APP_ID.png"
 install -m644 data/$APP_ID.metainfo.xml "$DATA/metainfo/"
 # absolute Exec: works even when ~/.local/bin is not on the launcher's PATH
 sed "s|^Exec=aurora-waves|Exec=$SRC/.venv/bin/aurora-waves|" data/$APP_ID.desktop > "$DATA/applications/$APP_ID.desktop"
