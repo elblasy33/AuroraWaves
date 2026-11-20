@@ -15,7 +15,9 @@ apt-get update -qq
 apt-get install -y -qq --no-install-recommends ca-certificates curl file patchelf binutils \
     gcc pkg-config meson ninja-build libgirepository1.0-dev libglib2.0-dev gir1.2-glib-2.0 \
     libcairo2-dev \
-    mpv desktop-file-utils libfuse2 squashfs-tools >/dev/null
+    mpv desktop-file-utils libfuse2 squashfs-tools \
+    libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xkb1 \
+    libxkbcommon-x11-0 libxcb-shape0 libxcb-xinerama0 >/dev/null
 
 mkdir -p $WORK && cd $WORK
 curl -sSfL -o linuxdeploy https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -50,6 +52,16 @@ cp -L /usr/lib/x86_64-linux-gnu/libgirepository-1.0.so.1 $APPDIR/usr/lib/
 # gi finds its GLib in the AppImage by itself (no LD_LIBRARY_PATH: that would leak into every
 # program the app starts, like the browser, and break it with our older libraries)
 patchelf --set-rpath '$ORIGIN/../../../../../lib' $APPDIR/usr/python/lib/python3.12/site-packages/gi/_gi*.so
+
+# Qt's X11 platform plugin needs small xcb helper libraries that a fresh Ubuntu 22.04 (or another
+# distribution) may lack (libxcb-cursor0 above all). They go next to Qt's own libraries, which Qt
+# finds through its $ORIGIN RUNPATH: nothing leaks into other programs.
+QTLIB=$APPDIR/usr/python/lib/python3.12/site-packages/PySide6/Qt/lib
+for l in libxcb-cursor.so.0 libxcb-icccm.so.4 libxcb-image.so.0 libxcb-keysyms.so.1 libxcb-render-util.so.0 \
+         libxcb-xkb.so.1 libxkbcommon-x11.so.0 libxcb-shape.so.0 libxcb-xinerama.so.0; do
+    cp -L /usr/lib/x86_64-linux-gnu/$l $QTLIB/
+    patchelf --set-rpath '$ORIGIN' $QTLIB/$l
+done
 
 echo "== desktop integration"
 ID=io.github.elblasy33.AuroraWaves

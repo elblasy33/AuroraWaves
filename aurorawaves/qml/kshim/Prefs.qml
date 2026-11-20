@@ -6,7 +6,7 @@ QtObject {
     id: prefs
 
     property string language: "auto"          // auto | ar | en
-    property string theme: "dark"              // dark | light | system
+    property string theme: "system"            // dark | light | system (system: light unless the desktop is dark)
     property real glassOpacity: 0.07
     property bool auroraEnabled: true
     property real auroraStrength: 0.6

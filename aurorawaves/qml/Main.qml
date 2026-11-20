@@ -198,6 +198,12 @@ QQC2.ApplicationWindow {
     Shortcut { sequence: "Escape"; enabled: win.nowOpen; onActivated: win.nowOpen = false }
     Shortcut { sequences: [StandardKey.Quit]; onActivated: Qt.quit() }
 
+    // save settings changed in the last moments (the app exits without waiting for timers)
+    Connections {
+        target: Qt.application
+        function onAboutToQuit() { Prefs.save() }
+    }
+
     // ------------------------------------------------------------- tray / single instance
     Connections {
         target: Backend

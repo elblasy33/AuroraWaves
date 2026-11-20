@@ -4,7 +4,7 @@ import QtQuick
 // Colors and fonts. Dark by default (the glass and the aurora shine there); light and system too.
 QtObject {
     readonly property bool dark: Prefs.theme === "dark"
-                                 || (Prefs.theme === "system" && Qt.styleHints.colorScheme !== Qt.ColorScheme.Light)
+                                 || (Prefs.theme === "system" && Qt.styleHints.colorScheme === Qt.ColorScheme.Dark)
 
     readonly property color backgroundColor: dark ? "#0d0e1c" : "#eef0f7"
     readonly property color surfaceColor: dark ? "#16182b" : "#ffffff"

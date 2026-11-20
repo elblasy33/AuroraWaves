@@ -46,10 +46,10 @@ def main():
     from . import icons, paths
     import json
     try:
-        theme = json.load(open(os.path.join(paths.CONFIG, "settings.json"))).get("theme", "dark")
+        theme = json.load(open(os.path.join(paths.CONFIG, "settings.json"))).get("theme", "system")
     except (OSError, ValueError):
         theme = "dark"
-    light = theme == "light" or (theme == "system" and app.styleHints().colorScheme().name == "Light")
+    light = theme == "light" or (theme == "system" and app.styleHints().colorScheme().name != "Dark")
     icons.install_theme(os.path.join(paths.CACHE, "icons"), "#1b1d2c" if light else "#f2f3fa",
                         QIcon.themeName())
 
@@ -120,4 +120,9 @@ def main():
         QTimer.singleShot(int(os.environ.get("AURORA_SHOT_MS", "6000")), grab)
 
     app.aboutToQuit.connect(player.shutdown)
-    return app.exec()
+    code = app.exec()
+    # A directory or YouTube request may still be running on the thread pool; Python would wait
+    # for it before exiting (minutes on a slow network). Settings are already saved (Main.qml
+    # saves them on aboutToQuit) and mpv is stopped, so leave now.
+    sys.stdout.flush()
+    os._exit(code)
