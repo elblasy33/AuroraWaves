@@ -17,7 +17,8 @@ apt-get install -y -qq --no-install-recommends ca-certificates curl file patchel
     libcairo2-dev \
     mpv desktop-file-utils libfuse2 squashfs-tools \
     libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xkb1 \
-    libxkbcommon-x11-0 libxcb-shape0 libxcb-xinerama0 >/dev/null
+    libxkbcommon-x11-0 libxcb-shape0 libxcb-xinerama0 libxcb-randr0 libxcb-render0 libxcb-shm0 \
+    libxcb-sync1 libxcb-xfixes0 libxcb-xinput0 libxcb-glx0 libxcb-util1 >/dev/null
 
 mkdir -p $WORK && cd $WORK
 curl -sSfL -o linuxdeploy https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -57,11 +58,21 @@ patchelf --set-rpath '$ORIGIN/../../../../../lib' $APPDIR/usr/python/lib/python3
 # distribution) may lack (libxcb-cursor0 above all). They go next to Qt's own libraries, which Qt
 # finds through its $ORIGIN RUNPATH: nothing leaks into other programs.
 QTLIB=$APPDIR/usr/python/lib/python3.12/site-packages/PySide6/Qt/lib
-for l in libxcb-cursor.so.0 libxcb-icccm.so.4 libxcb-image.so.0 libxcb-keysyms.so.1 libxcb-render-util.so.0 \
-         libxcb-xkb.so.1 libxkbcommon-x11.so.0 libxcb-shape.so.0 libxcb-xinerama.so.0; do
+# every xcb helper the X11 plugin links to, and what those link to (libxcb.so.1 itself is on any X11
+# system); found from the libraries themselves rather than from a hand-kept list
+need() { readelf -d "$1" | sed -n 's/.*NEEDED.*\[\(.*\)\]/\1/p' | grep -E '^lib(xcb-|xkbcommon-x11)' || true; }
+todo="$(need $QTLIB/libQt6XcbQpa.so.6) $(need $QTLIB/../plugins/platforms/libqxcb.so)"
+seen=" "
+while [ -n "$(echo $todo)" ]; do
+    set -- $todo; l=$1; shift; todo="$*"
+    case "$seen" in *" $l "*) continue ;; esac
+    seen="$seen$l "
+    [ -e $QTLIB/$l ] && continue
     cp -L /usr/lib/x86_64-linux-gnu/$l $QTLIB/
     patchelf --set-rpath '$ORIGIN' $QTLIB/$l
+    todo="$todo $(need $QTLIB/$l)"
 done
+echo "bundled xcb helpers:$seen"
 
 echo "== desktop integration"
 ID=io.github.elblasy33.AuroraWaves
