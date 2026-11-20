@@ -4,10 +4,10 @@
 |---|---|---|
 | Flathub | `flatpak/io.github.elblasy33.AuroraWaves.yml` (+ `mpv.yaml`, `yt-dlp.yaml`) | `flatpak-builder --user --install --force-clean build packaging/flatpak/io.github.elblasy33.AuroraWaves.yml` |
 | Snap Store | `snap/snapcraft.yaml` (copy to `snap/` at the project root) | `snapcraft pack` |
-| AppImage | `appimage/AppImageBuilder.yml` | `appimage-builder --recipe packaging/appimage/AppImageBuilder.yml` |
+| AppImage | `appimage/build.sh` (+ `in-container.sh`) | `packaging/appimage/build.sh` (Docker, Ubuntu 22.04 base) |
 
-**Status: first drafts, not built yet.** Each needs its toolchain (flatpak-builder with the KDE
-SDK 6.11 and the PySide BaseApp, snapcraft, appimage-builder) and a test build before submission.
+**AppImage: builds and works** (radio, YouTube Music, MPRIS with its own GLib, bundled mpv and
+yt-dlp; runs on glibc ≥ 2.35). Flatpak and Snap: first drafts, not built yet.
 
 Notes for reviewers:
 - The YouTube Music sign-in reads the browser session the user already has. Inside Flatpak and Snap
