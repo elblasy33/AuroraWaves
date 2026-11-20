@@ -360,5 +360,6 @@ var EN = {
     "لا توجد محطات بعد": "No stations yet",
     "ملف واحد، أو مجلد كامل، أو قائمة تشغيل M3U/PLS. تُشغَّل بالترتيب أو عشوائيًا.": "A single file, a whole folder or an M3U/PLS playlist, in order or shuffled.",
     "اكتشف إذاعات العالم من تبويب «اكتشف»، أو أضف رابطًا بنفسك.": "Find world radio in the Discover tab, or add a link yourself.",
-    "استيراد محطاتك من ودجت أمواج أورورا": "Import your stations from the Aurora Waves widget"
+    "استيراد محطاتك من ودجت أمواج أورورا": "Import your stations from the Aurora Waves widget",
+    "يوتيوب": "YouTube"
 }

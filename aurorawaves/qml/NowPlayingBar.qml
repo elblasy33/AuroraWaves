@@ -12,6 +12,8 @@ GlassPanel {
     signal expand()
 
     readonly property real gu: Units.gridUnit
+    // narrow: title + play controls only, progress as a thin line along the bottom
+    readonly property bool narrow: width < gu * 40
     readonly property bool yt: app.ytMode && app.ytTrack !== null
     readonly property bool tracks: app.localPlayback && app.duration > 0 && app.wantPlaying
     readonly property string title: yt ? app.ytTrack.title
@@ -21,7 +23,7 @@ GlassPanel {
                                      : app.isPlaying && app.trackTitle !== "" ? app.trackTitle
                                      : app.statusText()
 
-    implicitHeight: gu * 4.6
+    implicitHeight: narrow ? gu * 3.8 : gu * 4.6
     radius: 24
     accent: app.accent
     highlighted: app.wantPlaying
@@ -34,13 +36,14 @@ GlassPanel {
 
         // ---- now playing
         Item {
-            Layout.preferredWidth: Math.min(bar.width * 0.3, gu * 20)
+            Layout.preferredWidth: bar.narrow ? -1 : Math.min(bar.width * 0.3, gu * 20)
+            Layout.fillWidth: bar.narrow
             Layout.fillHeight: true
             RowLayout {
                 anchors.fill: parent
                 spacing: gu * 0.7
                 Item {
-                    Layout.preferredWidth: gu * 3.4; Layout.preferredHeight: gu * 3.4
+                    Layout.preferredWidth: bar.narrow ? gu * 2.8 : gu * 3.4; Layout.preferredHeight: Layout.preferredWidth
                     OnAirRing {
                         anchors.centerIn: parent
                         width: parent.width; height: parent.height
@@ -89,7 +92,7 @@ GlassPanel {
 
         // ---- transport + progress
         ColumnLayout {
-            Layout.fillWidth: true
+            Layout.fillWidth: !bar.narrow
             spacing: 2
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
@@ -97,7 +100,8 @@ GlassPanel {
                 LayoutMirroring.enabled: false
                 GlassButton {
                     iconName: "media-skip-backward"
-                    implicitHeight: gu * 2.2
+                    visible: !bar.narrow || bar.width > gu * 24
+                    implicitHeight: bar.narrow ? gu * 1.9 : gu * 2.2
                     toolTip: bar.yt ? bar.app.t("السابق") : bar.app.t("المحطة السابقة")
                     onClicked: bar.app.step(-1)
                 }
@@ -107,15 +111,15 @@ GlassPanel {
                             : bar.app.isPlaying ? "media-playback-stop" : "media-playback-start"
                     filled: true
                     accent: bar.app.accent
-                    implicitHeight: gu * 2.8
-                    implicitWidth: gu * 2.8
+                    implicitHeight: bar.narrow ? gu * 2.4 : gu * 2.8
+                    implicitWidth: implicitHeight
                     iconScale: 0.55
                     toolTip: bar.app.wantPlaying ? bar.app.t("إيقاف") : bar.app.t("تشغيل")
                     onClicked: bar.app.toggle()
                 }
                 GlassButton {
                     iconName: "media-skip-forward"
-                    implicitHeight: gu * 2.2
+                    implicitHeight: bar.narrow ? gu * 1.9 : gu * 2.2
                     toolTip: bar.yt ? bar.app.t("التالي") : bar.app.t("المحطة التالية")
                     onClicked: bar.app.step(1)
                 }
@@ -125,7 +129,7 @@ GlassPanel {
                 Layout.fillWidth: true
                 Layout.maximumWidth: gu * 34
                 Layout.alignment: Qt.AlignHCenter
-                visible: bar.tracks
+                visible: bar.tracks && !bar.narrow
                 LayoutMirroring.enabled: false
                 LayoutMirroring.childrenInherit: true
                 QQC2.Label { text: bar.app.fmtTime(seek.pressed ? seek.value : bar.app.position); color: Theme.dimTextColor; font: Theme.smallFont }
@@ -144,7 +148,7 @@ GlassPanel {
             }
             Rectangle {
                 Layout.alignment: Qt.AlignHCenter
-                visible: !bar.tracks && bar.app.isPlaying
+                visible: !bar.tracks && bar.app.isPlaying && !bar.narrow
                 implicitWidth: liveRow.implicitWidth + 16
                 implicitHeight: liveRow.implicitHeight + 6
                 radius: height / 2
@@ -176,6 +180,7 @@ GlassPanel {
 
         // ---- volume + panels
         RowLayout {
+            visible: !bar.narrow
             Layout.preferredWidth: Math.min(bar.width * 0.26, gu * 17)
             spacing: gu * 0.4
             Item { Layout.fillWidth: true }
@@ -221,6 +226,20 @@ GlassPanel {
                 QQC2.ToolTip.text: bar.app.t("وضع العرض الكامل")
                 QQC2.ToolTip.visible: hovered
             }
+        }
+    }
+
+    // narrow: progress along the bottom edge
+    Rectangle {
+        visible: bar.narrow && bar.tracks
+        anchors { left: parent.left; right: parent.right; bottom: parent.bottom; leftMargin: bar.radius; rightMargin: bar.radius; bottomMargin: 3 }
+        height: 3; radius: 1.5
+        color: Qt.rgba(Theme.textColor.r, Theme.textColor.g, Theme.textColor.b, 0.15)
+        LayoutMirroring.enabled: false
+        Rectangle {
+            height: parent.height; radius: parent.radius
+            width: parent.width * Math.min(1, bar.app.position / Math.max(1, bar.app.duration))
+            color: bar.app.accent
         }
     }
 }

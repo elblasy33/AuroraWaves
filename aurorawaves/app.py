@@ -27,11 +27,14 @@ def main():
     app.setWindowIcon(QIcon(ICON))
     app.setQuitOnLastWindowClosed(False)          # the window may live on in the tray
 
+    # screenshot mode runs isolated: beside a running instance, without taking its MPRIS name
+    shot = os.environ.get("AURORA_SHOT")
+
     # ---- single instance: a second launch just raises the first window
-    key = "aurora-waves-" + str(os.getuid())
+    key = "aurora-waves-" + str(os.getuid()) + ("-shot" if shot else "")
     probe = QLocalSocket()
     probe.connectToServer(key)
-    if probe.waitForConnected(300):
+    if not shot and probe.waitForConnected(300):
         probe.write(b"raise")
         probe.waitForBytesWritten(300)
         return 0
@@ -59,7 +62,10 @@ def main():
     def raise_window():
         backend.raiseRequested.emit()
 
-    player = Player(on_raise=raise_window, on_quit=app.quit)
+    if shot:
+        from .core import radiod
+        radiod.MPV_SOCK += ".shot"
+    player = Player(on_raise=raise_window, on_quit=app.quit, mpris=not shot)
     player.enable_mpris(True)
     backend = Backend(player)
     holder["backend"] = backend
@@ -92,12 +98,14 @@ def main():
     ticker.timeout.connect(player.evaluate)
     ticker.start(1000)
 
-    # development / store screenshots: AURORA_SHOT=/path.png [AURORA_PAGE=youtube] [AURORA_SHOT_MS=6000]
-    shot = os.environ.get("AURORA_SHOT")
+    # development / store screenshots: AURORA_SHOT=/path.png [AURORA_PAGE=youtube] [AURORA_SIZE=WxH] [AURORA_SHOT_MS=6000]
     if shot:
         root = engine.rootObjects()[0]
         if os.environ.get("AURORA_PAGE"):
             root.setProperty("page", os.environ["AURORA_PAGE"])
+        if os.environ.get("AURORA_SIZE"):
+            w, h = (int(x) for x in os.environ["AURORA_SIZE"].lower().split("x"))
+            root.resize(w, h)
 
         def grab():
             root.grabWindow().save(shot)

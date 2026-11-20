@@ -24,11 +24,15 @@ radiod.install_desktop_entry = lambda: None        # the app ships a real .deskt
 class Player(radiod.Daemon):
     """radiod.Daemon plus what a windowed app adds: MPRIS Raise/Quit act on the window."""
 
-    def __init__(self, on_raise=None, on_quit=None):
+    def __init__(self, on_raise=None, on_quit=None, mpris=True):
+        self.mpris_allowed = mpris          # off for isolated runs (screenshots, tests)
         super().__init__()
         self.on_raise = on_raise
         self.on_quit = on_quit
         self.app_name = APP_NAME
+
+    def enable_mpris(self, on):
+        super().enable_mpris(on and self.mpris_allowed)
 
     def mpris_props(self, iface):
         props = super().mpris_props(iface)

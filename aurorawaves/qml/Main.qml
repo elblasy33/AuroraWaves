@@ -13,8 +13,8 @@ QQC2.ApplicationWindow {
 
     width: 1240
     height: 800
-    minimumWidth: 760
-    minimumHeight: 540
+    minimumWidth: 320
+    minimumHeight: 160
     visible: true
     title: (app.ytMode && app.ytTrack ? app.ytTrack.title + " · "
             : app.wantPlaying && app.current ? app.current.name + " · " : "") + Backend.appName
@@ -43,6 +43,9 @@ QQC2.ApplicationWindow {
 
     property string page: Prefs.lastPage
     property bool nowOpen: false
+    // size modes: wide (sidebar) · compact (icon rail) · narrow (bottom tabs) · mini (player only)
+    readonly property bool mini: width < gu * 26 || height < gu * 20
+    readonly property bool narrow: !mini && width < gu * 40
     readonly property bool compact: width < 1020
     readonly property real gu: Units.gridUnit
     readonly property string coverUrl: app.ytMode && app.ytTrack ? (app.ytTrack.thumb || "")
@@ -77,10 +80,18 @@ QQC2.ApplicationWindow {
     }
 
     // ------------------------------------------------------------- layout
+    MiniPlayer {
+        anchors.fill: parent
+        visible: win.mini
+        app: app
+        cover: win.coverUrl
+    }
+
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: gu * 0.7
-        spacing: gu * 0.7
+        anchors.margins: win.narrow ? gu * 0.4 : gu * 0.7
+        spacing: win.narrow ? gu * 0.4 : gu * 0.7
+        visible: !win.mini
 
         RowLayout {
             Layout.fillWidth: true
@@ -88,6 +99,7 @@ QQC2.ApplicationWindow {
             spacing: gu * 0.7
 
             Sidebar {
+                visible: !win.narrow
                 Layout.fillHeight: true
                 app: app
                 current: win.page
@@ -134,6 +146,14 @@ QQC2.ApplicationWindow {
             app: app
             onExpand: win.nowOpen = true
         }
+
+        BottomNav {
+            Layout.fillWidth: true
+            visible: win.narrow
+            app: app
+            current: win.page
+            onPicked: function (key) { win.go(key) }
+        }
     }
 
     // full-window "now playing" with big cover and lyrics
@@ -141,7 +161,7 @@ QQC2.ApplicationWindow {
         anchors.fill: parent
         app: app
         cover: win.coverUrl
-        open: win.nowOpen
+        open: win.nowOpen && !win.mini
         onClose: win.nowOpen = false
     }
 

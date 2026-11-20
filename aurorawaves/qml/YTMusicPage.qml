@@ -481,7 +481,7 @@ Item {
                     iconName: "user"
                     filled: ytp.view === "account"
                     accent: app.accent
-                    toolTip: ytp.signedIn ? ytp.account.name : app.t("تسجيل الدخول بحساب جوجل (اختياري)")
+                    toolTip: ytp.signedIn ? (ytp.account.name || "") : app.t("تسجيل الدخول بحساب جوجل (اختياري)")
                     onClicked: ytp.showAccount()
                 }
                 StationLogo {
