@@ -38,6 +38,9 @@ Item {
     property string loginBusy: ""          // browser being read, or "headers"
     property string loginError: ""
     property bool showHeaders: false
+    // store packages (Snap, Flatpak): sandboxed, cannot read browser profiles; manual sign-in only
+    readonly property bool managed: !!app.ytStatus.managed
+    readonly property bool manualOpen: showHeaders || managed
     readonly property var browserNames: ({ chrome: "Google Chrome", chromium: "Chromium", brave: "Brave",
                                            edge: "Microsoft Edge", vivaldi: "Vivaldi", opera: "Opera", firefox: "Firefox" })
 
@@ -1067,16 +1070,29 @@ Item {
                     wrapMode: Text.WordWrap
                     text: app.t("تسجيل الدخول اختياري: يضيف أغانيك المفضلة وقوائمك وسجلك واقتراحات على ذوقك. كل شيء يعمل بدونه.")
                 }
+                GlassPanel {
+                    Layout.fillWidth: true
+                    visible: !ytp.signedIn && ytp.managed
+                    implicitHeight: sandboxNote.implicitHeight + ytp.gu
+                    radius: 14
+                    QQC2.Label {
+                        id: sandboxNote
+                        anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: ytp.gu * 0.5 }
+                        wrapMode: Text.WordWrap
+                        font: Kirigami.Theme.smallFont
+                        text: app.t("هذه نسخة المتجر (Snap أو Flatpak): تعمل في بيئة معزولة لا تسمح لها بقراءة بيانات المتصفح، لذلك سجّل الدخول بالطريقة اليدوية بالأسفل مرة واحدة. لتسجيل الدخول من المتصفح مباشرةً استخدم نسخة AppImage.")
+                    }
+                }
                 QQC2.Label {
                     Layout.fillWidth: true
-                    visible: !ytp.signedIn
+                    visible: !ytp.signedIn && !ytp.managed
                     wrapMode: Text.WordWrap
                     font: Kirigami.Theme.smallFont
                     opacity: 0.65
                     text: app.t("جوجل لا تسمح بتسجيل الدخول من داخل الويدجت، لذلك نستخدم جلستك المفتوحة في متصفحك: سجّل الدخول في music.youtube.com من المتصفح أولًا، ثم اختره هنا. تُحفظ الجلسة على جهازك فقط، ويمكنك تسجيل الخروج في أي وقت.")
                 }
                 SectionTitle {
-                    visible: !ytp.signedIn
+                    visible: !ytp.signedIn && !ytp.managed
                     text: app.t("من متصفحك")
                 }
                 Repeater {
@@ -1120,7 +1136,7 @@ Item {
                 }
                 QQC2.Label {
                     Layout.fillWidth: true
-                    visible: !ytp.signedIn && (app.ytStatus.browsers || []).length === 0
+                    visible: !ytp.signedIn && !ytp.managed && (app.ytStatus.browsers || []).length === 0
                     text: app.t("لم نجد متصفحًا مدعومًا. استخدم الطريقة اليدوية بالأسفل.")
                     wrapMode: Text.WordWrap
                     opacity: 0.7
@@ -1130,13 +1146,14 @@ Item {
                 QQC2.Label {
                     Layout.fillWidth: true
                     visible: !ytp.signedIn
-                    text: (ytp.showHeaders ? "▾ " : "▸ ") + app.t("طريقة يدوية (لصق ترويسات الطلب)")
+                    text: (ytp.manualOpen ? "▾ " : "▸ ") + app.t("طريقة يدوية (لصق ترويسات الطلب)")
                     color: Kirigami.Theme.linkColor
+                    font.weight: ytp.managed ? Font.DemiBold : Font.Normal
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: ytp.showHeaders = !ytp.showHeaders }
                 }
                 QQC2.Label {
                     Layout.fillWidth: true
-                    visible: !ytp.signedIn && ytp.showHeaders
+                    visible: !ytp.signedIn && ytp.manualOpen
                     wrapMode: Text.WordWrap
                     font: Kirigami.Theme.smallFont
                     opacity: 0.7
@@ -1145,9 +1162,19 @@ Item {
                 QQC2.ScrollView {
                     Layout.fillWidth: true
                     Layout.preferredHeight: ytp.gu * 6
-                    visible: !ytp.signedIn && ytp.showHeaders
+                    visible: !ytp.signedIn && ytp.manualOpen
+                    background: Rectangle {
+                        radius: 12
+                        color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.06)
+                        border.width: 1
+                        border.color: headersBox.activeFocus ? Kirigami.Theme.highlightColor
+                                    : Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.18)
+                    }
                     QQC2.TextArea {
                         id: headersBox
+                        padding: ytp.gu * 0.5
+                        background: null
+                        color: Kirigami.Theme.textColor
                         placeholderText: "cookie: …\nx-goog-authuser: 0\n…"
                         wrapMode: TextEdit.WrapAnywhere
                         font.family: "monospace"
@@ -1155,8 +1182,8 @@ Item {
                     }
                 }
                 GlassButton {
-                    Layout.alignment: Qt.AlignHCenter
-                    visible: !ytp.signedIn && ytp.showHeaders
+                    Layout.alignment: Qt.AlignLeft
+                    visible: !ytp.signedIn && ytp.manualOpen
                     text: ytp.loginBusy === "headers" ? app.t("جاري التحقق…") : app.t("تسجيل الدخول")
                     filled: true
                     accent: "#e53935"

@@ -110,6 +110,9 @@ def main():
         root = engine.rootObjects()[0]
         if os.environ.get("AURORA_PAGE"):
             root.setProperty("page", os.environ["AURORA_PAGE"])
+        if os.environ.get("AURORA_YT_VIEW") == "account":       # screenshot of the account page
+            from PySide6.QtCore import QMetaObject, QObject
+            QTimer.singleShot(2500, lambda: QMetaObject.invokeMethod(root.findChild(QObject, "ytPage"), "showAccount"))
         if os.environ.get("AURORA_SIZE"):
             w, h = (int(x) for x in os.environ["AURORA_SIZE"].lower().split("x"))
             root.resize(w, h)

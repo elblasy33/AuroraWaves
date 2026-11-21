@@ -367,5 +367,6 @@ var EN = {
     "خروج": "Quit",
     "لا يوجد اتصال بالإنترنت": "No internet connection",
     "ستظهر هنا اقتراحات يوتيوب ميوزك عند عودة الاتصال. موسيقاك المحفوظة على جهازك تعمل الآن.": "YouTube Music suggestions will appear here when you are back online. The music on this computer works now.",
-    "إعادة المحاولة": "Try again"
+    "إعادة المحاولة": "Try again",
+    "هذه نسخة المتجر (Snap أو Flatpak): تعمل في بيئة معزولة لا تسمح لها بقراءة بيانات المتصفح، لذلك سجّل الدخول بالطريقة اليدوية بالأسفل مرة واحدة. لتسجيل الدخول من المتصفح مباشرةً استخدم نسخة AppImage.": "This is the store version (Snap or Flatpak): it runs in a sandbox that cannot read browser data, so sign in once with the manual method below. To sign in straight from the browser, use the AppImage."
 }

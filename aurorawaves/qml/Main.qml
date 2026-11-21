@@ -135,7 +135,7 @@ QQC2.ApplicationWindow {
                         onOpenYtItem: function (item) { win.openYt(item) }
                     }
                     RadioPage { id: radioPage; app: app; form: form }
-                    YTMusicPage { id: ytPage; app: app; showBack: false; visible: win.page === "youtube" }
+                    YTMusicPage { id: ytPage; objectName: "ytPage"; app: app; showBack: false; visible: win.page === "youtube" }
                     ColumnLayout {
                         spacing: Units.largeSpacing
                         Kirigami.Heading { text: app.t("موسيقاي"); level: 2 }

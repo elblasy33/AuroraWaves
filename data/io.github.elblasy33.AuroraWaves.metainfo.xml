@@ -35,15 +35,15 @@
   <screenshots>
     <screenshot type="default">
       <caption>Home: your stations and YouTube Music suggestions</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.6/docs/screenshots/home.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.7/docs/screenshots/home.png</image>
     </screenshot>
     <screenshot>
       <caption>YouTube Music</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.6/docs/screenshots/youtube.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.7/docs/screenshots/youtube.png</image>
     </screenshot>
     <screenshot>
       <caption>World radio</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.6/docs/screenshots/radio.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.7/docs/screenshots/radio.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>
@@ -70,6 +70,14 @@
     <color type="primary" scheme_preference="dark">#8a1538</color>
   </branding>
   <releases>
+    <release version="0.1.7" date="2026-11-21">
+      <description>
+        <ul>
+          <li>Snap and Flatpak: the YouTube Music account page explains that the sandbox cannot read
+            browser data and opens the manual sign-in directly</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.6" date="2026-11-21">
       <description>
         <ul>
