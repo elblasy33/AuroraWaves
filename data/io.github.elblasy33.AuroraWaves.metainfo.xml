@@ -35,15 +35,15 @@
   <screenshots>
     <screenshot type="default">
       <caption>Home: your stations and YouTube Music suggestions</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.7/docs/screenshots/home.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.8/docs/screenshots/home.png</image>
     </screenshot>
     <screenshot>
       <caption>YouTube Music</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.7/docs/screenshots/youtube.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.8/docs/screenshots/youtube.png</image>
     </screenshot>
     <screenshot>
       <caption>World radio</caption>
-      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.7/docs/screenshots/radio.png</image>
+      <image>https://raw.githubusercontent.com/elblasy33/AuroraWaves/v0.1.8/docs/screenshots/radio.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>
@@ -70,6 +70,17 @@
     <color type="primary" scheme_preference="dark">#8a1538</color>
   </branding>
   <releases>
+    <release version="0.1.8" date="2026-11-21">
+      <description>
+        <ul>
+          <li>Flatpak: sign in to YouTube Music with one click from Chrome, Chromium, Brave, Edge,
+            Vivaldi, Opera or Firefox (read-only access to their profiles)</li>
+          <li>The browser's cookie key is read from KWallet or the GNOME keyring over D-Bus, without
+            needing extra programs</li>
+          <li>Snap: a button to the AppImage for one-click browser sign-in</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.7" date="2026-11-21">
       <description>
         <ul>

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aurora-waves"
-version = "0.1.7"
+version = "0.1.8"
 description = "World radio, YouTube Music and your own music in one frosted-glass player"
 readme = "README.md"
 license = "GPL-2.0-or-later"

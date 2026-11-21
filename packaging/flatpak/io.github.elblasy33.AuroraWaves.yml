@@ -19,6 +19,19 @@ finish-args:
   - --own-name=org.mpris.MediaPlayer2.AuroraWaves     # media keys, media controllers
   - --talk-name=org.kde.StatusNotifierWatcher          # tray icon
   - --filesystem=xdg-music:ro                          # your music folders
+  # optional YouTube Music sign-in with the session of a browser you already use (read only),
+  # and the keyrings that hold Chrome's cookie key
+  - --filesystem=~/.config/google-chrome:ro
+  - --filesystem=~/.config/chromium:ro
+  - --filesystem=~/.config/BraveSoftware:ro
+  - --filesystem=~/.config/microsoft-edge:ro
+  - --filesystem=~/.config/vivaldi:ro
+  - --filesystem=~/.config/opera:ro
+  - --filesystem=~/.mozilla:ro
+  - --filesystem=~/snap/firefox/common/.mozilla:ro
+  - --talk-name=org.kde.kwalletd6
+  - --talk-name=org.kde.kwalletd5
+  - --talk-name=org.freedesktop.secrets
   # optional: import the stations of the Aurora Waves Plasma widget
   - --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc:ro
 cleanup-commands:

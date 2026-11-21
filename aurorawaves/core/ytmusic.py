@@ -114,8 +114,23 @@ def status():
     return {"ready": ready, "ytmusicapi": v["ytmusicapi"], "ytdlp": v["ytdlp"],
             "updatedDays": round(days, 1), "signedIn": bool(acc), "account": acc or {},
             "managed": MANAGED,
-            "browsers": [] if MANAGED else [b for b, dirs in BROWSER_DIRS.items()
-                                            if any(os.path.isdir(os.path.expanduser(d)) for d in dirs)]}
+            "browsers": readable_browsers()}
+
+
+def readable_browsers():
+    """Browsers whose profile folder this process can read (a sandbox only sees what it was granted)."""
+    home = os.environ.get("SNAP_REAL_HOME") or os.path.expanduser("~")
+    found = []
+    for name, dirs in BROWSER_DIRS.items():
+        for d in dirs:
+            path = os.path.join(home, d[2:]) if d.startswith("~/") else d
+            try:
+                if os.path.isdir(path) and os.listdir(path) is not None:
+                    found.append(name)
+                    break
+            except OSError:
+                continue
+    return found
 
 
 def read_json(path):
@@ -175,6 +190,91 @@ def yt(country="", lang="en"):
 
 
 # ------------------------------------------------------------------ account
+# ---- browser keyrings over D-Bus -------------------------------------------------------------
+# yt-dlp reads Chrome's cookie key with the kwallet-query and dbus-send programs (KDE) or the
+# secretstorage module (GNOME). Inside Flatpak and Snap those are usually missing, so the key is
+# asked for here directly over D-Bus with GLib (already used for MPRIS), the same calls those tools
+# make. If this fails, yt-dlp's own way is still tried.
+_KWALLET_BUS = {"KWALLET6": ("org.kde.kwalletd6", "/modules/kwalletd6"),
+                "KWALLET5": ("org.kde.kwalletd5", "/modules/kwalletd5"),
+                "KWALLET": ("org.kde.kwalletd", "/modules/kwalletd")}
+
+
+def _dbus_call(bus, name, path, iface, method, args, reply):
+    from gi.repository import GLib
+    return bus.call_sync(name, path, iface, method, args, GLib.VariantType(reply), 0, 5000, None).unpack()
+
+
+def _kwallet_password(app_name, keyring_name):
+    from gi.repository import Gio, GLib
+    bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+    order = [keyring_name] + [k for k in ("KWALLET6", "KWALLET5", "KWALLET") if k != keyring_name]
+    for key in order:
+        name, path = _KWALLET_BUS.get(key, (None, None))
+        if not name:
+            continue
+        try:
+            wallet = _dbus_call(bus, name, path, "org.kde.KWallet", "networkWallet", None, "(s)")[0]
+            handle = _dbus_call(bus, name, path, "org.kde.KWallet", "open",
+                                GLib.Variant("(sxs)", (wallet, 0, "Aurora Waves")), "(i)")[0]
+            if handle < 0:
+                continue
+            pw = _dbus_call(bus, name, path, "org.kde.KWallet", "readPassword",
+                            GLib.Variant("(isss)", (handle, app_name + " Keys", app_name + " Safe Storage",
+                                                    "Aurora Waves")), "(s)")[0]
+            if pw:
+                return pw.encode()
+        except Exception:
+            continue
+    return None
+
+
+def _secret_service_password(app_name):
+    from gi.repository import Gio, GLib
+    bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+    svc, root = "org.freedesktop.secrets", "/org/freedesktop/secrets"
+    session = _dbus_call(bus, svc, root, "org.freedesktop.Secret.Service", "OpenSession",
+                         GLib.Variant("(sv)", ("plain", GLib.Variant("s", ""))), "(vo)")[1]
+    items = _dbus_call(bus, svc, "/org/freedesktop/secrets/aliases/default", "org.freedesktop.DBus.Properties",
+                       "Get", GLib.Variant("(ss)", ("org.freedesktop.Secret.Collection", "Items")), "(v)")[0]
+    for item in items:
+        label = _dbus_call(bus, svc, item, "org.freedesktop.DBus.Properties", "Get",
+                           GLib.Variant("(ss)", ("org.freedesktop.Secret.Item", "Label")), "(v)")[0]
+        if label == app_name + " Safe Storage":
+            secret = _dbus_call(bus, svc, item, "org.freedesktop.Secret.Item", "GetSecret",
+                                GLib.Variant("(o)", (session,)), "((oayays))")[0]
+            return bytes(secret[2])
+    return None
+
+
+def _install_keyring_bridge():
+    try:
+        from yt_dlp import cookies
+    except Exception:
+        return
+    original = cookies._get_linux_keyring_password
+    if getattr(original, "_aurora", False):
+        return
+
+    def get_password(browser_keyring_name, keyring, logger):
+        try:
+            chosen = keyring or cookies._choose_linux_keyring(logger).name
+            if str(chosen).startswith("KWALLET"):
+                pw = _kwallet_password(browser_keyring_name, str(chosen))
+            elif str(chosen) == "GNOMEKEYRING":
+                pw = _secret_service_password(browser_keyring_name)
+            else:
+                pw = None
+            if pw:
+                return pw
+        except Exception:
+            pass
+        return original(browser_keyring_name, keyring, logger)
+
+    get_password._aurora = True
+    cookies._get_linux_keyring_password = get_password
+
+
 def headers_from_browser(browser):
     from yt_dlp.cookies import extract_cookies_from_browser
 
@@ -184,7 +284,16 @@ def headers_from_browser(browser):
         def warning(self, *a, **k): pass
         def error(self, *a, **k): pass
 
-    jar = extract_cookies_from_browser(browser, logger=Quiet())
+    _install_keyring_bridge()
+    real_home = os.environ.get("SNAP_REAL_HOME")
+    saved = os.environ.get("HOME")
+    try:
+        if real_home:
+            os.environ["HOME"] = real_home          # browser profiles live in the real home
+        jar = extract_cookies_from_browser(browser, logger=Quiet())
+    finally:
+        if real_home and saved is not None:
+            os.environ["HOME"] = saved
     cookies = {}
     for c in jar:
         if c.domain.lstrip(".").endswith("youtube.com") and c.value:

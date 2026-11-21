@@ -40,7 +40,7 @@ Item {
     property bool showHeaders: false
     // store packages (Snap, Flatpak): sandboxed, cannot read browser profiles; manual sign-in only
     readonly property bool managed: !!app.ytStatus.managed
-    readonly property bool manualOpen: showHeaders || managed
+    readonly property bool manualOpen: showHeaders || (managed && (app.ytStatus.browsers || []).length === 0)
     readonly property var browserNames: ({ chrome: "Google Chrome", chromium: "Chromium", brave: "Brave",
                                            edge: "Microsoft Edge", vivaldi: "Vivaldi", opera: "Opera", firefox: "Firefox" })
 
@@ -1072,27 +1072,36 @@ Item {
                 }
                 GlassPanel {
                     Layout.fillWidth: true
-                    visible: !ytp.signedIn && ytp.managed
-                    implicitHeight: sandboxNote.implicitHeight + ytp.gu
+                    visible: !ytp.signedIn && ytp.managed && (app.ytStatus.browsers || []).length === 0
+                    implicitHeight: sandboxRow.implicitHeight + ytp.gu
                     radius: 14
-                    QQC2.Label {
-                        id: sandboxNote
+                    RowLayout {
+                        id: sandboxRow
                         anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: ytp.gu * 0.5 }
-                        wrapMode: Text.WordWrap
-                        font: Kirigami.Theme.smallFont
-                        text: app.t("هذه نسخة المتجر (Snap أو Flatpak): تعمل في بيئة معزولة لا تسمح لها بقراءة بيانات المتصفح، لذلك سجّل الدخول بالطريقة اليدوية بالأسفل مرة واحدة. لتسجيل الدخول من المتصفح مباشرةً استخدم نسخة AppImage.")
+                        spacing: ytp.gu * 0.6
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            wrapMode: Text.WordWrap
+                            font: Kirigami.Theme.smallFont
+                            text: app.t("هذه نسخة المتجر (Snap أو Flatpak): تعمل في بيئة معزولة لا تسمح لها بقراءة بيانات المتصفح، لذلك سجّل الدخول بالطريقة اليدوية بالأسفل مرة واحدة. لتسجيل الدخول من المتصفح مباشرةً استخدم نسخة AppImage.")
+                        }
+                        GlassButton {
+                            text: "AppImage"
+                            iconName: "download"
+                            onClicked: Backend.openUrl("https://github.com/elblasy33/AuroraWaves/releases/latest")
+                        }
                     }
                 }
                 QQC2.Label {
                     Layout.fillWidth: true
-                    visible: !ytp.signedIn && !ytp.managed
+                    visible: !ytp.signedIn && (!ytp.managed || (app.ytStatus.browsers || []).length > 0)
                     wrapMode: Text.WordWrap
                     font: Kirigami.Theme.smallFont
                     opacity: 0.65
                     text: app.t("جوجل لا تسمح بتسجيل الدخول من داخل الويدجت، لذلك نستخدم جلستك المفتوحة في متصفحك: سجّل الدخول في music.youtube.com من المتصفح أولًا، ثم اختره هنا. تُحفظ الجلسة على جهازك فقط، ويمكنك تسجيل الخروج في أي وقت.")
                 }
                 SectionTitle {
-                    visible: !ytp.signedIn && !ytp.managed
+                    visible: !ytp.signedIn && (app.ytStatus.browsers || []).length > 0
                     text: app.t("من متصفحك")
                 }
                 Repeater {
