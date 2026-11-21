@@ -368,5 +368,16 @@ var EN = {
     "لا يوجد اتصال بالإنترنت": "No internet connection",
     "ستظهر هنا اقتراحات يوتيوب ميوزك عند عودة الاتصال. موسيقاك المحفوظة على جهازك تعمل الآن.": "YouTube Music suggestions will appear here when you are back online. The music on this computer works now.",
     "إعادة المحاولة": "Try again",
-    "هذه نسخة المتجر (Snap أو Flatpak): تعمل في بيئة معزولة لا تسمح لها بقراءة بيانات المتصفح، لذلك سجّل الدخول بالطريقة اليدوية بالأسفل مرة واحدة. لتسجيل الدخول من المتصفح مباشرةً استخدم نسخة AppImage.": "This is the store version (Snap or Flatpak): it runs in a sandbox that cannot read browser data, so sign in once with the manual method below. To sign in straight from the browser, use the AppImage."
+    "هذه نسخة المتجر (Snap أو Flatpak): تعمل في بيئة معزولة لا تسمح لها بقراءة بيانات المتصفح، لذلك سجّل الدخول بالطريقة اليدوية بالأسفل مرة واحدة. لتسجيل الدخول من المتصفح مباشرةً استخدم نسخة AppImage.": "This is the store version (Snap or Flatpak): it runs in a sandbox that cannot read browser data, so sign in once with the manual method below. To sign in straight from the browser, use the AppImage.",
+    "اضغط «افتح يوتيوب ميوزك» بالأسفل، وتأكد أن حسابك ظاهر أعلى الصفحة.": "Press “Open YouTube Music” below and check that your account shows at the top of the page.",
+    "في صفحة يوتيوب ميوزك اضغط زر F12 في لوحة المفاتيح. ستفتح لوحة «أدوات المطوّر» بجانب الصفحة.": "On the YouTube Music page press F12 on the keyboard. The “Developer tools” panel opens next to the page.",
+    "في أعلى اللوحة اختر تبويب Network (الشبكة)، واكتب browse في خانة البحث Filter الموجودة فيه.": "At the top of that panel choose the Network tab and type browse in its Filter box.",
+    "اضغط F5 لإعادة تحميل الصفحة، فيظهر في القائمة سطر أو أكثر اسمه browse.": "Press F5 to reload the page: one or more lines named browse appear in the list.",
+    "اضغط بزر الفأرة الأيمن على أول سطر browse، واختر Copy Value، ثم Copy Request Headers.": "Right-click the first browse line, choose Copy Value, then Copy Request Headers.",
+    "اضغط بزر الفأرة الأيمن على أول سطر browse، واختر Copy، ثم Copy request headers.": "Right-click the first browse line, choose Copy, then Copy request headers.",
+    "ارجع هنا واضغط «الصق»، ثم «تسجيل الدخول». يمكنك بعدها إغلاق أدوات المطوّر.": "Come back here and press “Paste”, then “Sign in”. You can close the developer tools afterwards.",
+    "افتح يوتيوب ميوزك": "Open YouTube Music",
+    "الصق": "Paste",
+    "✓ تمام، اضغط «تسجيل الدخول».": "✓ Looks right, press “Sign in”.",
+    "هذا ليس المطلوب: تأكد أنك اخترت Copy request headers على سطر browse وأنت مسجّل الدخول في يوتيوب ميوزك.": "That is not it: make sure you chose Copy request headers on a browse line while signed in to YouTube Music."
 }

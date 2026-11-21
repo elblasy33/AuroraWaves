@@ -40,6 +40,7 @@ Item {
     property bool showHeaders: false
     // store packages (Snap, Flatpak): sandboxed, cannot read browser profiles; manual sign-in only
     readonly property bool managed: !!app.ytStatus.managed
+    property string guideBrowser: "chrome"
     readonly property bool manualOpen: showHeaders || (managed && (app.ytStatus.browsers || []).length === 0)
     readonly property var browserNames: ({ chrome: "Google Chrome", chromium: "Chromium", brave: "Brave",
                                            edge: "Microsoft Edge", vivaldi: "Vivaldi", opera: "Opera", firefox: "Firefox" })
@@ -1160,13 +1161,54 @@ Item {
                     font.weight: ytp.managed ? Font.DemiBold : Font.Normal
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: ytp.showHeaders = !ytp.showHeaders }
                 }
-                QQC2.Label {
+                // step-by-step guide: the browser's developer tools copy the sign-in for us
+                ColumnLayout {
                     Layout.fillWidth: true
                     visible: !ytp.signedIn && ytp.manualOpen
-                    wrapMode: Text.WordWrap
-                    font: Kirigami.Theme.smallFont
-                    opacity: 0.7
-                    text: app.t("في المتصفح: افتح music.youtube.com وأنت مسجّل، اضغط F12 ← Network، اختر أي طلب باسم browse، ثم انسخ Request Headers والصقها هنا.")
+                    spacing: ytp.gu * 0.4
+                    Segmented {
+                        Layout.preferredWidth: ytp.gu * 22
+                        accent: app.accent
+                        current: ytp.guideBrowser
+                        model: [{ key: "chrome", text: "Chrome / Brave / Edge", icon: "" },
+                                { key: "firefox", text: "Firefox", icon: "" }]
+                        onPicked: function (k) { ytp.guideBrowser = k }
+                    }
+                    Repeater {
+                        model: [
+                            app.t("اضغط «افتح يوتيوب ميوزك» بالأسفل، وتأكد أن حسابك ظاهر أعلى الصفحة."),
+                            app.t("في صفحة يوتيوب ميوزك اضغط زر F12 في لوحة المفاتيح. ستفتح لوحة «أدوات المطوّر» بجانب الصفحة."),
+                            app.t("في أعلى اللوحة اختر تبويب Network (الشبكة)، واكتب browse في خانة البحث Filter الموجودة فيه."),
+                            app.t("اضغط F5 لإعادة تحميل الصفحة، فيظهر في القائمة سطر أو أكثر اسمه browse."),
+                            ytp.guideBrowser === "firefox"
+                                ? app.t("اضغط بزر الفأرة الأيمن على أول سطر browse، واختر Copy Value، ثم Copy Request Headers.")
+                                : app.t("اضغط بزر الفأرة الأيمن على أول سطر browse، واختر Copy، ثم Copy request headers."),
+                            app.t("ارجع هنا واضغط «الصق»، ثم «تسجيل الدخول». يمكنك بعدها إغلاق أدوات المطوّر.")
+                        ]
+                        delegate: RowLayout {
+                            required property string modelData
+                            required property int index
+                            Layout.fillWidth: true
+                            spacing: ytp.gu * 0.5
+                            Rectangle {
+                                Layout.alignment: Qt.AlignTop
+                                implicitWidth: ytp.gu * 1.3; implicitHeight: implicitWidth; radius: width / 2
+                                color: Qt.rgba(app.accent.r, app.accent.g, app.accent.b, 0.35)
+                                QQC2.Label { anchors.centerIn: parent; text: index + 1; font.bold: true; color: Kirigami.Theme.textColor }
+                            }
+                            QQC2.Label {
+                                Layout.fillWidth: true
+                                wrapMode: Text.WordWrap
+                                text: modelData
+                                color: Kirigami.Theme.textColor
+                            }
+                        }
+                    }
+                    GlassButton {
+                        text: app.t("افتح يوتيوب ميوزك")
+                        iconName: "globe"
+                        onClicked: Backend.openUrl("https://music.youtube.com")
+                    }
                 }
                 QQC2.ScrollView {
                     Layout.fillWidth: true
@@ -1188,6 +1230,26 @@ Item {
                         wrapMode: TextEdit.WrapAnywhere
                         font.family: "monospace"
                         font.pixelSize: Kirigami.Theme.smallFont.pixelSize
+                    }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: !ytp.signedIn && ytp.manualOpen
+                    spacing: ytp.gu * 0.5
+                    GlassButton {
+                        text: app.t("الصق")
+                        iconName: "edit-copy"
+                        onClicked: { headersBox.selectAll(); headersBox.paste() }
+                    }
+                    QQC2.Label {
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
+                        font: Kirigami.Theme.smallFont
+                        visible: headersBox.text.trim() !== ""
+                        readonly property bool good: /(^|\n)\s*cookie\s*:/i.test(headersBox.text) && /SAPISID/.test(headersBox.text)
+                        color: good ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
+                        text: good ? app.t("✓ تمام، اضغط «تسجيل الدخول».")
+                                   : app.t("هذا ليس المطلوب: تأكد أنك اخترت Copy request headers على سطر browse وأنت مسجّل الدخول في يوتيوب ميوزك.")
                     }
                 }
                 GlassButton {
