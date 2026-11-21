@@ -41,7 +41,7 @@ Item {
     // store packages (Snap, Flatpak): sandboxed, cannot read browser profiles; manual sign-in only
     readonly property bool managed: !!app.ytStatus.managed
     property string guideBrowser: "chrome"
-    readonly property bool manualOpen: showHeaders || (managed && (app.ytStatus.browsers || []).length === 0)
+    readonly property bool manualOpen: showHeaders
     readonly property var browserNames: ({ chrome: "Google Chrome", chromium: "Chromium", brave: "Brave",
                                            edge: "Microsoft Edge", vivaldi: "Vivaldi", opera: "Opera", firefox: "Firefox" })
 
@@ -1071,9 +1071,79 @@ Item {
                     wrapMode: Text.WordWrap
                     text: app.t("تسجيل الدخول اختياري: يضيف أغانيك المفضلة وقوائمك وسجلك واقتراحات على ذوقك. كل شيء يعمل بدونه.")
                 }
+                // store builds: a small script outside the sandbox reads the browser for us
                 GlassPanel {
                     Layout.fillWidth: true
-                    visible: !ytp.signedIn && ytp.managed && (app.ytStatus.browsers || []).length === 0
+                    visible: !ytp.signedIn && ytp.managed && !!app.ytStatus.helperCmd
+                    implicitHeight: helperCol.implicitHeight + ytp.gu * 1.2
+                    radius: 14
+                    highlighted: true
+                    accent: app.accent
+                    ColumnLayout {
+                        id: helperCol
+                        anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: ytp.gu * 0.7 }
+                        spacing: ytp.gu * 0.45
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            wrapMode: Text.WordWrap
+                            font.weight: Font.DemiBold
+                            text: app.t("الدخول من متصفحك بأمر واحد")
+                        }
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            wrapMode: Text.WordWrap
+                            text: app.t("1. سجّل الدخول في music.youtube.com من متصفحك المعتاد.") + "\n"
+                                + app.t("2. اضغط «نسخ الأمر»، ثم افتح الطرفية (Konsole أو Terminal) والصقه فيها واضغط Enter.") + "\n"
+                                + app.t("3. ارجع هنا: سيظهر حسابك خلال ثوانٍ.")
+                        }
+                        Rectangle {
+                            Layout.fillWidth: true
+                            implicitHeight: cmdLabel.implicitHeight + ytp.gu * 0.6
+                            radius: 8
+                            color: Qt.rgba(0, 0, 0, 0.25)
+                            QQC2.Label {
+                                id: cmdLabel
+                                anchors { fill: parent; margins: ytp.gu * 0.3 }
+                                text: app.ytStatus.helperCmd || ""
+                                font.family: "monospace"
+                                font.pointSize: Kirigami.Theme.smallFont.pointSize
+                                wrapMode: Text.WrapAnywhere
+                                LayoutMirroring.enabled: false
+                                horizontalAlignment: Text.AlignLeft
+                            }
+                        }
+                        RowLayout {
+                            spacing: ytp.gu * 0.5
+                            GlassButton {
+                                text: app.t("نسخ الأمر")
+                                iconName: "edit-copy"
+                                onClicked: { Backend.copyText(app.ytStatus.helperCmd); savedNote.show(app.t("نُسخ الأمر"), true) }
+                            }
+                            GlassButton {
+                                text: app.t("افتح يوتيوب ميوزك")
+                                iconName: "globe"
+                                onClicked: Backend.openUrl("https://music.youtube.com")
+                            }
+                        }
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            wrapMode: Text.WordWrap
+                            font: Kirigami.Theme.smallFont
+                            opacity: 0.65
+                            text: app.t("كروم يجدّد الجلسة كل فترة؛ ليبقى الدخول دائمًا أضف ⁦--autostart⁩ في آخر الأمر.")
+                        }
+                    }
+                }
+                // waiting for the script: look for its hand-over every few seconds
+                Timer {
+                    interval: 3000
+                    repeat: true
+                    running: ytp.view === "account" && !ytp.signedIn && ytp.managed && ytp.visible
+                    onTriggered: app.ytCheck()
+                }
+                GlassPanel {
+                    Layout.fillWidth: true
+                    visible: false
                     implicitHeight: sandboxRow.implicitHeight + ytp.gu
                     radius: 14
                     RowLayout {
@@ -1158,7 +1228,6 @@ Item {
                     visible: !ytp.signedIn
                     text: (ytp.manualOpen ? "▾ " : "▸ ") + app.t("طريقة يدوية (لصق ترويسات الطلب)")
                     color: Kirigami.Theme.linkColor
-                    font.weight: ytp.managed ? Font.DemiBold : Font.Normal
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: ytp.showHeaders = !ytp.showHeaders }
                 }
                 // step-by-step guide: the browser's developer tools copy the sign-in for us

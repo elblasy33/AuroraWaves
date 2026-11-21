@@ -11,7 +11,7 @@ import shutil
 from concurrent.futures import ThreadPoolExecutor
 
 from PySide6.QtCore import Property, QObject, QUrl, Signal, Slot
-from PySide6.QtGui import QDesktopServices
+from PySide6.QtGui import QDesktopServices, QGuiApplication
 from PySide6.QtQml import QJSValue
 
 from . import APP_ID, APP_NAME, VERSION, icons, paths
@@ -162,6 +162,10 @@ class Backend(QObject):
     @Slot(str)
     def openUrl(self, url):
         QDesktopServices.openUrl(QUrl(url))
+
+    @Slot(str)
+    def copyText(self, text):
+        QGuiApplication.clipboard().setText(text)
 
     # ---------------------------------------------------------------- facts
     @Property(str, constant=True)

@@ -70,6 +70,15 @@
     <color type="primary" scheme_preference="dark">#8a1538</color>
   </branding>
   <releases>
+    <release version="0.1.10" date="2026-11-21">
+      <description>
+        <ul>
+          <li>Snap and Flatpak: sign in to YouTube Music from your browser with one command. A small
+            script that comes with the app reads the browser session outside the sandbox and hands
+            it to the app; it can also keep the session fresh after every login</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.9" date="2026-11-21">
       <description>
         <ul>

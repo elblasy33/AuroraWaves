@@ -38,6 +38,7 @@ YTDLP_WRAPPER = os.path.join(DATA, "bin", "yt-dlp")
 STAMP = os.path.join(DATA, "pylib.updated")
 AUTH = os.path.join(DATA, "ytm-auth.json")          # request headers (cookie) of the signed-in account
 ACCOUNT = os.path.join(DATA, "ytm-account.json")    # {name, handle, photo, method, browser}
+IMPORT = os.path.join(DATA, "ytm-import.json")      # a session handed over by signin_helper.py
 BROWSER_UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
               "Chrome/140.0.0.0 Safari/537.36")
 BROWSER_DIRS = {
@@ -110,10 +111,11 @@ def status():
         days = -1
     if MANAGED:
         days = 0                      # nothing for the app to update
+    adopt_import()
     acc = read_json(ACCOUNT) if os.path.exists(AUTH) else None
     return {"ready": ready, "ytmusicapi": v["ytmusicapi"], "ytdlp": v["ytdlp"],
             "updatedDays": round(days, 1), "signedIn": bool(acc), "account": acc or {},
-            "managed": MANAGED,
+            "managed": MANAGED, "helperCmd": helper_command() if MANAGED else "",
             "browsers": readable_browsers()}
 
 
@@ -316,6 +318,52 @@ def headers_from_browser(browser):
 REFRESH_SECS = 10 * 60
 
 
+def helper_command():
+    """The command that runs signin_helper.py with the system Python, as a host path."""
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "signin_helper.py")
+    snap = os.environ.get("SNAP")
+    if snap and here.startswith(snap + "/"):
+        here = "/snap/%s/current%s" % (os.environ.get("SNAP_INSTANCE_NAME") or "aurora-waves",
+                                       here[len(snap):])
+    elif IN_FLATPAK and here.startswith("/app/"):
+        try:
+            for line in open("/.flatpak-info"):
+                if line.startswith("app-path="):
+                    root = line.split("=", 1)[1].strip()
+                    # .../<branch>/<commit>/files -> .../<branch>/active/files survives updates
+                    parts = root.rstrip("/").split("/")
+                    if len(parts) > 2 and parts[-1] == "files":
+                        parts[-2] = "active"
+                    here = "/".join(parts) + here[4:]
+                    break
+        except OSError:
+            pass
+    return "python3 " + here
+
+
+def adopt_import():
+    """Take over a session that signin_helper.py wrote (Snap / Flatpak sign-in from outside)."""
+    data = read_json(IMPORT)
+    if not data or not isinstance(data.get("headers"), dict):
+        return False
+    try:
+        os.unlink(IMPORT)
+    except OSError:
+        return False
+    acc = read_json(ACCOUNT) or {}
+    write_private(AUTH, data["headers"])
+    _YT.clear()
+    if acc.get("method") == "helper" and os.path.exists(AUTH):
+        return True                        # a renewal: same account, fresh cookies
+    try:
+        acc = dict(account_info(), method="helper", browser=data.get("browser", ""))
+    except Exception:
+        logout()
+        return False
+    write_private(ACCOUNT, acc)
+    return True
+
+
 def refresh_browser_login(force=False):
     """Re-read the session from the browser.
 
@@ -323,6 +371,8 @@ def refresh_browser_login(force=False):
     ones, so a copy goes stale quickly: refresh when it is older than REFRESH_SECS, or on demand
     after YouTube treated a request as signed out. Returns True when fresh headers were written.
     """
+    if adopt_import():
+        return True
     acc = read_json(ACCOUNT) or {}
     if acc.get("method") != "browser":
         return False
