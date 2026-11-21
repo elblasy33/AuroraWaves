@@ -42,6 +42,12 @@ Item {
     readonly property bool managed: !!app.ytStatus.managed
     property string guideBrowser: "chrome"
     readonly property bool manualOpen: showHeaders
+    // sign-in through the helper's link: waiting for it for up to 30 s after the button
+    property real helperAsked: 0
+    property bool showHelperCmd: false
+    property real nowTick: 0
+    readonly property bool helperWaiting: helperAsked > 0 && nowTick - helperAsked < 30000 && !signedIn && !helperFailed
+    readonly property bool helperFailed: helperAsked > 0 && ((app.ytStatus.helperError || {}).time || 0) * 1000 >= helperAsked - 2000
     readonly property var browserNames: ({ chrome: "Google Chrome", chromium: "Chromium", brave: "Brave",
                                            edge: "Microsoft Edge", vivaldi: "Vivaldi", opera: "Opera", firefox: "Firefox" })
 
@@ -1087,8 +1093,60 @@ Item {
                             Layout.fillWidth: true
                             wrapMode: Text.WordWrap
                             font.weight: Font.DemiBold
-                            text: app.t("الدخول من متصفحك بأمر واحد")
+                            text: app.ytStatus.helperReady ? app.t("الدخول من متصفحك")
+                                                           : app.t("الدخول من متصفحك بأمر واحد")
                         }
+                        // the helper is registered: one button, the desktop runs it outside the sandbox
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            visible: !!app.ytStatus.helperReady
+                            wrapMode: Text.WordWrap
+                            text: app.t("سجّل الدخول في music.youtube.com من متصفحك المعتاد، ثم اضغط الزر.")
+                        }
+                        RowLayout {
+                            visible: !!app.ytStatus.helperReady
+                            spacing: ytp.gu * 0.5
+                            GlassButton {
+                                text: app.t("الدخول من المتصفح")
+                                iconName: "internet-web-browser"
+                                filled: true
+                                accent: app.accent
+                                enabled: !ytp.helperWaiting
+                                onClicked: {
+                                    ytp.helperAsked = Date.now()
+                                    Backend.openUrl("aurora-waves-signin:login")
+                                }
+                            }
+                            QQC2.BusyIndicator {
+                                visible: ytp.helperWaiting
+                                running: visible
+                                implicitWidth: ytp.gu * 1.4; implicitHeight: implicitWidth
+                            }
+                            GlassButton {
+                                text: app.t("افتح يوتيوب ميوزك")
+                                iconName: "globe"
+                                onClicked: Backend.openUrl("https://music.youtube.com")
+                            }
+                        }
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            visible: ytp.helperFailed
+                            wrapMode: Text.WordWrap
+                            color: Kirigami.Theme.negativeTextColor
+                            text: app.t("لم أجد حسابًا مسجّلًا في متصفحك. سجّل الدخول في music.youtube.com ثم اضغط الزر مرة أخرى.")
+                        }
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            visible: !!app.ytStatus.helperReady
+                            text: (ytp.showHelperCmd ? "▾ " : "▸ ") + app.t("الزر لا يعمل؟ شغّل الأمر في الطرفية")
+                            color: Kirigami.Theme.linkColor
+                            font: Kirigami.Theme.smallFont
+                            MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: ytp.showHelperCmd = !ytp.showHelperCmd }
+                        }
+                        ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: !app.ytStatus.helperReady || ytp.showHelperCmd
+                        spacing: ytp.gu * 0.45
                         QQC2.Label {
                             Layout.fillWidth: true
                             wrapMode: Text.WordWrap
@@ -1132,14 +1190,15 @@ Item {
                             opacity: 0.65
                             text: app.t("كروم يجدّد الجلسة كل فترة؛ ليبقى الدخول دائمًا أضف ⁦--autostart⁩ في آخر الأمر.")
                         }
+                        }
                     }
                 }
                 // waiting for the script: look for its hand-over every few seconds
                 Timer {
-                    interval: 3000
+                    interval: ytp.helperWaiting ? 1500 : 3000
                     repeat: true
                     running: ytp.view === "account" && !ytp.signedIn && ytp.managed && ytp.visible
-                    onTriggered: app.ytCheck()
+                    onTriggered: { ytp.nowTick = Date.now(); app.ytCheck() }
                 }
                 GlassPanel {
                     Layout.fillWidth: true

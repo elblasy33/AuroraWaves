@@ -39,6 +39,8 @@ STAMP = os.path.join(DATA, "pylib.updated")
 AUTH = os.path.join(DATA, "ytm-auth.json")          # request headers (cookie) of the signed-in account
 ACCOUNT = os.path.join(DATA, "ytm-account.json")    # {name, handle, photo, method, browser}
 IMPORT = os.path.join(DATA, "ytm-import.json")      # a session handed over by signin_helper.py
+IMPORT_ERR = os.path.join(DATA, "ytm-import-error.json")
+HELPER_MARK = os.path.join(DATA, "signin-helper.json")  # the helper registered its link (button works)
 BROWSER_UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
               "Chrome/140.0.0.0 Safari/537.36")
 BROWSER_DIRS = {
@@ -116,6 +118,8 @@ def status():
     return {"ready": ready, "ytmusicapi": v["ytmusicapi"], "ytdlp": v["ytdlp"],
             "updatedDays": round(days, 1), "signedIn": bool(acc), "account": acc or {},
             "managed": MANAGED, "helperCmd": helper_command() if MANAGED else "",
+            "helperReady": MANAGED and os.path.exists(HELPER_MARK),
+            "helperError": (read_json(IMPORT_ERR) or {}) if MANAGED else {},
             "browsers": readable_browsers()}
 
 

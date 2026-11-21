@@ -14,6 +14,10 @@ folder (mode 600). Nothing is sent anywhere. Options:
     --keep        stay running and renew the session every 10 minutes (Chrome rotates it)
     --autostart   renew it automatically after every login (adds a desktop autostart entry)
     --no-autostart  remove that entry
+    --uninstall   remove everything this script added
+
+The first run also registers the aurora-waves-signin: link, so afterwards the app's sign-in button
+runs this script through the desktop (the app itself cannot start programs outside its sandbox).
 """
 import argparse
 import json
@@ -45,6 +49,11 @@ BROWSERS = {
 }
 AUTOSTART = os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".config"),
                          "autostart", "aurora-waves-signin.desktop")
+APPS = os.path.join(os.environ.get("XDG_DATA_HOME") or os.path.join(HOME, ".local/share"), "applications")
+SCHEME = "aurora-waves-signin"
+HANDLER = os.path.join(APPS, SCHEME + ".desktop")
+MARKER = "signin-helper.json"           # tells the app that its sign-in button can call us
+ERROR_NAME = "ytm-import-error.json"
 
 AR = os.environ.get("LANG", "").startswith("ar")
 
@@ -137,8 +146,53 @@ def hand_over(browser, headers):
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump({"browser": browser, "headers": headers, "time": int(time.time())}, f)
         os.replace(tmp, path)
+        try:
+            os.unlink(os.path.join(folder, ERROR_NAME))
+        except OSError:
+            pass
         done.append(name)
     return done
+
+
+def installed_targets():
+    return [t for t in TARGETS.values() if os.path.isdir(os.path.dirname(os.path.dirname(t)))]
+
+
+def report_error(code):
+    """Started from the app's button there is no terminal: tell the app what went wrong."""
+    for folder in installed_targets():
+        os.makedirs(folder, exist_ok=True)
+        with open(os.path.join(folder, ERROR_NAME), "w") as f:
+            json.dump({"error": code, "time": int(time.time())}, f)
+
+
+def install_handler():
+    """Register aurora-waves-signin: so the sandboxed app can ask the desktop to run us."""
+    import subprocess
+    os.makedirs(APPS, exist_ok=True)
+    with open(HANDLER, "w") as f:
+        f.write("[Desktop Entry]\nType=Application\nName=Aurora Waves sign-in\n"
+                "Comment=Signs Aurora Waves in to YouTube Music with your browser's session\n"
+                "Exec=python3 %s --from-app %%u\nMimeType=x-scheme-handler/%s;\n"
+                "NoDisplay=true\nTerminal=false\n" % (os.path.abspath(__file__), SCHEME))
+    for cmd in (["xdg-mime", "default", os.path.basename(HANDLER), "x-scheme-handler/" + SCHEME],
+                ["update-desktop-database", APPS]):
+        try:
+            subprocess.run(cmd, capture_output=True, timeout=20)
+        except (OSError, subprocess.SubprocessError):
+            pass
+    for folder in installed_targets():
+        os.makedirs(folder, exist_ok=True)
+        with open(os.path.join(folder, MARKER), "w") as f:
+            json.dump({"scheme": SCHEME, "path": os.path.abspath(__file__)}, f)
+
+
+def remove_handler():
+    for path in [HANDLER] + [os.path.join(t, MARKER) for t in TARGETS.values()]:
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
 
 
 def set_autostart(on):
@@ -162,7 +216,23 @@ def main():
     p.add_argument("--keep", action="store_true")
     p.add_argument("--autostart", action="store_true")
     p.add_argument("--no-autostart", action="store_true")
+    p.add_argument("--from-app", nargs="?", const="", metavar="URL", help=argparse.SUPPRESS)
+    p.add_argument("--uninstall", action="store_true", help="remove the sign-in button support and autostart")
     a = p.parse_args()
+
+    if a.uninstall:
+        set_autostart(False)
+        remove_handler()
+        say("أُزيل كل شيء أضافه هذا السكريبت.", "Everything this script added was removed.")
+        return 0
+    if a.from_app is not None:                 # the app's sign-in button, through the desktop
+        load_ytdlp()
+        browser, headers = find_session(a.browser, verbose=False)
+        if headers:
+            hand_over(browser, headers)
+            return 0
+        report_error("not-signed-in")
+        return 1
 
     if a.no_autostart:
         set_autostart(False)
@@ -181,11 +251,14 @@ def main():
             "No account found. Sign in at music.youtube.com in your browser, then run this again.")
         return 1
     to = hand_over(browser, headers)
+    install_handler()
     say("تم: أُرسلت جلسة %s إلى التطبيق (%s). ارجع للتطبيق، سيظهر حسابك خلال ثوانٍ."
         % (browser, ", ".join(to)),
         "Done: the %s session was handed to the app (%s). Back in the app, your account shows up "
         "in a few seconds." % (browser, ", ".join(to)))
 
+    say("من الآن يكفي زر «الدخول من المتصفح» داخل التطبيق، بدون الطرفية.",
+        "From now on the app's “Sign in from browser” button is enough, no terminal needed.")
     if a.autostart:
         set_autostart(True)
         say("سيُجدَّد الدخول تلقائياً بعد كل تشغيل للجهاز.", "The session will be renewed after every login.")

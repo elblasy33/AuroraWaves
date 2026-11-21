@@ -70,6 +70,14 @@
     <color type="primary" scheme_preference="dark">#8a1538</color>
   </branding>
   <releases>
+    <release version="0.1.11" date="2026-11-21">
+      <description>
+        <ul>
+          <li>Snap and Flatpak: after the sign-in script ran once, a "Sign in from browser" button in
+            the app runs it again through the desktop, with no terminal</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.10" date="2026-11-21">
       <description>
         <ul>

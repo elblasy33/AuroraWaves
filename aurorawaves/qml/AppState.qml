@@ -169,7 +169,8 @@ Item {
         if (!r || r.ready === undefined) return
         ytStatus = { checked: true, ready: r.ready, ytdlp: r.ytdlp, days: r.updatedDays,
                      signedIn: !!r.signedIn, account: r.account || {}, browsers: r.browsers || [],
-                     managed: !!r.managed, helperCmd: r.helperCmd || "" }
+                     managed: !!r.managed, helperCmd: r.helperCmd || "",
+                     helperReady: !!r.helperReady, helperError: r.helperError || {} }
     }
     function ytCheck(cb) {
         runYt("status", "-", function (r) {
